@@ -1,5 +1,8 @@
 package com.github.dlx4.slim;
 
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.io.*;
 
 /**
@@ -10,9 +13,19 @@ import java.io.*;
  */
 public class SlimUtils {
 
+    /**
+     * @param parseTree
+     * @Description: 打印AST
+     * @return: void
+     * @Creator: dlx
+     */
+    public static void printAST(ParseTree parseTree, Parser parser) {
+        System.out.println(parseTree.toStringTree(parser));
+    }
 
     /**
      * 读文本文件
+     *
      * @param pathName
      * @return
      * @throws IOException
@@ -31,6 +44,7 @@ public class SlimUtils {
 
     /**
      * 写文本文件
+     *
      * @param pathName
      * @param text
      * @throws IOException

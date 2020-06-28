@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class SlimCompilerTest extends BaseTest {
 
-    @ValueSource(strings = {"expression.test"})
+    @ValueSource(strings = {"expression.00.test"})
     @ParameterizedTest
     void expression(String fileName) throws IOException {
 
@@ -23,5 +23,6 @@ public class SlimCompilerTest extends BaseTest {
         AnnotatedTree at = compiler.compile(script);
         compiler.execute(at);
     }
+
 
 }
