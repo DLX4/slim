@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @program: slim
@@ -65,5 +67,33 @@ public class SlimUtils {
         }
     }
 
+    // 自增ID
+    private static Map<String, Integer> AUTO_INC_ID = new HashMap<>();
+
+    /**
+     * @param prefix
+     * @Description: 获取自增ID
+     * @return: int
+     * @Creator: dlx
+     */
+    private static int getAutoIncID(String prefix) {
+        if (!AUTO_INC_ID.containsKey(prefix)) {
+            AUTO_INC_ID.put(prefix, 0);
+        }
+        int id = AUTO_INC_ID.get(prefix);
+        AUTO_INC_ID.put(prefix, id + 1);
+        return id;
+    }
+
+    /**
+     * @param cls
+     * @Description: 生成symbol的name
+     * @return: java.lang.String
+     * @Creator: dlx
+     */
+    public static String generateSymbolName(Class cls) {
+        String name = cls.getName();
+        return name + getAutoIncID(name);
+    }
 
 }

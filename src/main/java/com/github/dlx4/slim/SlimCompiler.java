@@ -5,6 +5,7 @@ import com.github.dlx4.slim.antlr.SlimParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 /**
  * @program: slim
@@ -31,8 +32,11 @@ public class SlimCompiler {
         // 语法分析
         SlimParser parser = new SlimParser(tokens);
         ParseTree ast = parser.prog();
+        at.setAst(ast);
         SlimUtils.printAST(ast, parser);
 
+        // 语义分析
+        ParseTreeWalker walker = new ParseTreeWalker();
         return at;
     }
 
@@ -43,7 +47,9 @@ public class SlimCompiler {
      * @Creator: dlx
      */
     public Object execute(AnnotatedTree at) {
-        return null;
+        ASTEvaluator visitor = new ASTEvaluator();
+        Object result = visitor.visit(at.getAst());
+        return result;
     }
 
 
