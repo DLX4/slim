@@ -11,8 +11,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public class BlockScope extends Scope {
 
-    public BlockScope() {
-        super(SlimUtils.generateSymbolName(BlockScope.class), null, null);
+    public BlockScope(Scope enclosingScope, ParserRuleContext ctx) {
+        super(SlimUtils.generateSymbolName(BlockScope.class), enclosingScope, ctx);
     }
 
     public BlockScope(String name, Scope enclosingScope, ParserRuleContext ctx) {

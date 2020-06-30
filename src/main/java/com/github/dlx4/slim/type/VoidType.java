@@ -16,7 +16,7 @@ public class VoidType implements SlimType {
     private VoidType() {
     }
 
-    public static VoidType instance() {
+    public static VoidType getInstance() {
         return voidType;
     }
 

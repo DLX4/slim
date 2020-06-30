@@ -2,6 +2,9 @@ package com.github.dlx4.slim;
 
 import com.github.dlx4.slim.antlr.SlimLexer;
 import com.github.dlx4.slim.antlr.SlimParser;
+import com.github.dlx4.slim.scanner.RefResolveScanner;
+import com.github.dlx4.slim.scanner.ScopeScanner;
+import com.github.dlx4.slim.scanner.VariableScanner;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -24,7 +27,6 @@ public class SlimCompiler {
      */
     public AnnotatedTree compile(String script) {
 
-
         // 词法分析
         SlimLexer lexer = new SlimLexer(CharStreams.fromString(script));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -35,9 +37,22 @@ public class SlimCompiler {
         SlimUtils.printAST(ast, parser);
 
         // 语义分析
-        AnnotatedTree at = new AnnotatedTree(ast);
+        AnnotatedTree annotatedTree = new AnnotatedTree(ast);
         ParseTreeWalker walker = new ParseTreeWalker();
-        return at;
+
+        // 扫描scope
+        ScopeScanner scopeScanner = new ScopeScanner(annotatedTree);
+        walker.walk(scopeScanner, ast);
+
+        // 扫描变量，标注类型
+        VariableScanner variableScanner = new VariableScanner(annotatedTree);
+        walker.walk(variableScanner, ast);
+
+        // 引用消解扫描
+        RefResolveScanner refResolveScanner = new RefResolveScanner(annotatedTree);
+        walker.walk(refResolveScanner, ast);
+
+        return annotatedTree;
     }
 
     /**
@@ -51,6 +66,5 @@ public class SlimCompiler {
         Object result = visitor.visit(at.getAst());
         return result;
     }
-
 
 }

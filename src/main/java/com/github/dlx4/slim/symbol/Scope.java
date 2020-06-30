@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: slim
@@ -26,10 +27,24 @@ public abstract class Scope extends SlimSymbol {
      * @return: void
      * @Creator: dlx
      */
-    private void addSymbol(SlimSymbol symbol) {
+    public void addSymbol(SlimSymbol symbol) {
         symbol.setEnclosingScope(this);
         this.symbols.add(symbol);
     }
 
+    /**
+     * @param name
+     * @Description: 从scope中获取variable
+     * @return: com.github.dlx4.slim.symbol.Variable
+     * @Creator: dlx
+     */
+    public Variable getVariable(String name) {
+        for (SlimSymbol s : symbols) {
+            if (s instanceof Variable && Objects.equals(s.getName(), name)) {
+                return (Variable) s;
+            }
+        }
+        return null;
+    }
 
 }
