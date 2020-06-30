@@ -23,7 +23,7 @@ public class SlimCompiler {
      * @Creator: dlx
      */
     public AnnotatedTree compile(String script) {
-        AnnotatedTree at = new AnnotatedTree();
+
 
         // 词法分析
         SlimLexer lexer = new SlimLexer(CharStreams.fromString(script));
@@ -32,10 +32,10 @@ public class SlimCompiler {
         // 语法分析
         SlimParser parser = new SlimParser(tokens);
         ParseTree ast = parser.prog();
-        at.setAst(ast);
         SlimUtils.printAST(ast, parser);
 
         // 语义分析
+        AnnotatedTree at = new AnnotatedTree(ast);
         ParseTreeWalker walker = new ParseTreeWalker();
         return at;
     }

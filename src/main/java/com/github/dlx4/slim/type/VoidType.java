@@ -10,11 +10,11 @@ import com.github.dlx4.slim.symbol.Scope;
  */
 public class VoidType implements SlimType {
 
-    private VoidType() {
-    }
-
     // 单例
     private static VoidType voidType = new VoidType();
+
+    private VoidType() {
+    }
 
     public static VoidType instance() {
         return voidType;

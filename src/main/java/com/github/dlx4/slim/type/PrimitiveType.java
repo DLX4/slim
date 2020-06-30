@@ -10,12 +10,6 @@ import com.github.dlx4.slim.symbol.Scope;
  */
 public class PrimitiveType implements SlimType {
 
-    private String name = null;
-
-    private PrimitiveType(String name) {
-        this.name = name;
-    }
-
     // 把常见的基础数据类型都定义出来
     public static PrimitiveType Integer = new PrimitiveType("Integer");
     public static PrimitiveType Long = new PrimitiveType("Long");
@@ -25,10 +19,13 @@ public class PrimitiveType implements SlimType {
     public static PrimitiveType Byte = new PrimitiveType("Byte");
     public static PrimitiveType Char = new PrimitiveType("Char");
     public static PrimitiveType Short = new PrimitiveType("Short");
-
     public static PrimitiveType String = new PrimitiveType("Short"); //增加String为基础类型
-
     public static PrimitiveType Null = new PrimitiveType("null");
+    private String name = null;
+
+    private PrimitiveType(String name) {
+        this.name = name;
+    }
 
     /**
      * 计算两个类型中比较“高”的一级，比如int和long相加，要取long

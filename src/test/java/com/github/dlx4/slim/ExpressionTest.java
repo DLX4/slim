@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author: dlx
  * @created: 2020/06/28 23:44
  */
-public class SlimCompilerTest extends BaseTest {
+public class ExpressionTest extends BaseTest {
 
     @ValueSource(strings = {"expression.00.test"})
     @ParameterizedTest
@@ -21,7 +21,8 @@ public class SlimCompilerTest extends BaseTest {
 
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
-        compiler.execute(at);
+        Object result = compiler.execute(at);
+        System.out.println(result);
     }
 
 

@@ -13,6 +13,10 @@ import com.github.dlx4.slim.type.SlimType;
  */
 public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
+//    // 栈帧管理
+//    private Stack<StackFrame> stack = new Stack<StackFrame>();
+
+
     @Override
     public Object visitBlock(SlimParser.BlockContext ctx) {
         return null;
@@ -20,12 +24,55 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitBlockStatement(SlimParser.BlockStatementContext ctx) {
-        return null;
+        Object ret = null;
+        if (ctx.statement() != null) {
+            ret = visitStatement(ctx.statement());
+        }
+        return ret;
     }
 
     @Override
     public Object visitExpression(SlimParser.ExpressionContext ctx) {
-        return null;
+        Object ret = null;
+
+        if (ctx.bop != null && ctx.expression().size() >= 2) {
+            Object left = visitExpression(ctx.expression(0));
+            Object right = visitExpression(ctx.expression(1));
+
+            Object leftObject = left;
+            Object rightObject = right;
+
+            SlimType type = PrimitiveType.Integer;
+
+            switch (ctx.bop.getType()) {
+                case SlimParser.ADD:
+                    ret = EvaluatorHelper.add(leftObject, rightObject, type);
+                    break;
+                case SlimParser.SUB:
+                    ret = EvaluatorHelper.minus(leftObject, rightObject, type);
+                    break;
+                case SlimParser.MUL:
+                    ret = EvaluatorHelper.mul(leftObject, rightObject, type);
+                    break;
+                case SlimParser.DIV:
+                    ret = EvaluatorHelper.div(leftObject, rightObject, type);
+                    break;
+
+                case SlimParser.AND:
+                    ret = (Boolean) leftObject && (Boolean) rightObject;
+                    break;
+                case SlimParser.OR:
+                    ret = (Boolean) leftObject || (Boolean) rightObject;
+                    break;
+
+                default:
+                    break;
+            }
+
+        } else if (ctx.primary() != null) {
+            ret = visitPrimary(ctx.primary());
+        }
+        return ret;
     }
 
     @Override
@@ -40,17 +87,24 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitLiteral(SlimParser.LiteralContext ctx) {
-        return null;
+        Object ret = null;
+
+        // 整数
+        if (ctx.integerLiteral() != null) {
+            ret = visitIntegerLiteral(ctx.integerLiteral());
+        }
+
+        return ret;
     }
 
 
     @Override
     public Object visitIntegerLiteral(SlimParser.IntegerLiteralContext ctx) {
-        Object rtn = null;
+        Object ret = null;
         if (ctx.DECIMAL_LITERAL() != null) {
-            rtn = Integer.valueOf(ctx.DECIMAL_LITERAL().getText());
+            ret = Integer.valueOf(ctx.DECIMAL_LITERAL().getText());
         }
-        return rtn;
+        return ret;
     }
 
     @Override
@@ -65,7 +119,13 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitPrimary(SlimParser.PrimaryContext ctx) {
-        return null;
+        Object ret = null;
+        // 字面量
+        if (ctx.literal() != null) {
+            ret = visitLiteral(ctx.literal());
+        }
+
+        return ret;
     }
 
     @Override
@@ -75,7 +135,11 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitStatement(SlimParser.StatementContext ctx) {
-        return null;
+        Object ret = null;
+        if (ctx.statementExpression != null) {
+            ret = visitExpression(ctx.statementExpression);
+        }
+        return ret;
     }
 
     @Override
@@ -105,12 +169,18 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitBlockStatements(SlimParser.BlockStatementsContext ctx) {
-        return null;
+        Object ret = null;
+        for (SlimParser.BlockStatementContext child : ctx.blockStatement()) {
+            ret = visitBlockStatement(child);
+        }
+
+        return ret;
     }
 
     @Override
     public Object visitProg(SlimParser.ProgContext ctx) {
-        return null;
+        Object ret = visitBlockStatements(ctx.blockStatements());
+        return ret;
     }
 
     @Override
@@ -120,165 +190,165 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
 
 
     private static class EvaluatorHelper {
-        private Object add(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object add(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.String) {
-                rtn = String.valueOf(obj1) + String.valueOf(obj2);
+                ret = String.valueOf(obj1) + String.valueOf(obj2);
             } else if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() + ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() + ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() + ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() + ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() + ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() + ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() + ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() + ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() + ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() + ((Number) obj2).shortValue();
             } else {
                 System.out.println("unsupported add operation");
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object minus(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object minus(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() - ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() - ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() - ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() - ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() - ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() - ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() - ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() - ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() - ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() - ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object mul(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object mul(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() * ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() * ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() * ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() * ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() * ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() * ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() * ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() * ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() * ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() * ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object div(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object div(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() / ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() / ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() / ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() / ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() / ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() / ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() / ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() / ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() / ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() / ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Boolean EQ(Object obj1, Object obj2, SlimType targetType) {
-            Boolean rtn = null;
+        private static Boolean EQ(Object obj1, Object obj2, SlimType targetType) {
+            Boolean ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() == ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() == ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() == ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() == ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() == ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() == ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() == ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() == ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() == ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() == ((Number) obj2).shortValue();
             }
             //对于对象实例、函数，直接比较对象引用
             else {
-                rtn = obj1 == obj2;
+                ret = obj1 == obj2;
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object GE(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object GE(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() >= ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() >= ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() >= ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() >= ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() >= ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() >= ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() >= ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() >= ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() >= ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() >= ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object GT(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object GT(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() > ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() > ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() > ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() > ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() > ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() > ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() > ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() > ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() > ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() > ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object LE(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object LE(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() <= ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() <= ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() <= ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() <= ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() <= ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() <= ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() <= ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() <= ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() <= ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() <= ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
 
-        private Object LT(Object obj1, Object obj2, SlimType targetType) {
-            Object rtn = null;
+        private static Object LT(Object obj1, Object obj2, SlimType targetType) {
+            Object ret = null;
             if (targetType == PrimitiveType.Integer) {
-                rtn = ((Number) obj1).intValue() < ((Number) obj2).intValue();
+                ret = ((Number) obj1).intValue() < ((Number) obj2).intValue();
             } else if (targetType == PrimitiveType.Float) {
-                rtn = ((Number) obj1).floatValue() < ((Number) obj2).floatValue();
+                ret = ((Number) obj1).floatValue() < ((Number) obj2).floatValue();
             } else if (targetType == PrimitiveType.Long) {
-                rtn = ((Number) obj1).longValue() < ((Number) obj2).longValue();
+                ret = ((Number) obj1).longValue() < ((Number) obj2).longValue();
             } else if (targetType == PrimitiveType.Double) {
-                rtn = ((Number) obj1).doubleValue() < ((Number) obj2).doubleValue();
+                ret = ((Number) obj1).doubleValue() < ((Number) obj2).doubleValue();
             } else if (targetType == PrimitiveType.Short) {
-                rtn = ((Number) obj1).shortValue() < ((Number) obj2).shortValue();
+                ret = ((Number) obj1).shortValue() < ((Number) obj2).shortValue();
             }
 
-            return rtn;
+            return ret;
         }
     }
 }

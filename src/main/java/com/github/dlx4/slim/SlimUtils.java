@@ -15,6 +15,9 @@ import java.util.Map;
  */
 public class SlimUtils {
 
+    // 自增ID
+    private static Map<String, Integer> AUTO_INC_ID = new HashMap<>();
+
     /**
      * @param parseTree
      * @Description: 打印AST
@@ -66,9 +69,6 @@ public class SlimUtils {
             out.flush(); // 把缓存区内容压入文件
         }
     }
-
-    // 自增ID
-    private static Map<String, Integer> AUTO_INC_ID = new HashMap<>();
 
     /**
      * @param prefix
