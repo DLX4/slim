@@ -2,6 +2,7 @@ package com.github.dlx4.slim;
 
 import com.github.dlx4.slim.antlr.SlimLexer;
 import com.github.dlx4.slim.antlr.SlimParser;
+import com.github.dlx4.slim.runtime.SlimEvaluator;
 import com.github.dlx4.slim.scanner.RefResolveScanner;
 import com.github.dlx4.slim.scanner.ScopeScanner;
 import com.github.dlx4.slim.scanner.VariableScanner;
@@ -34,7 +35,8 @@ public class SlimCompiler {
         // 语法分析
         SlimParser parser = new SlimParser(tokens);
         ParseTree ast = parser.prog();
-        SlimUtils.printAST(ast, parser);
+        SlimUtils.printAst(ast, parser);
+        SlimUtils.printAstPretty(ast, parser);
 
         // 语义分析
         AnnotatedTree annotatedTree = new AnnotatedTree(ast);
@@ -62,7 +64,7 @@ public class SlimCompiler {
      * @Creator: dlx
      */
     public Object execute(AnnotatedTree at) {
-        ASTEvaluator visitor = new ASTEvaluator();
+        SlimEvaluator visitor = new SlimEvaluator(at);
         Object result = visitor.visit(at.getAst());
         return result;
     }

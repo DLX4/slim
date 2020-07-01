@@ -1,5 +1,6 @@
-package com.github.dlx4.slim;
+package com.github.dlx4.slim.runtime;
 
+import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimBaseVisitor;
 import com.github.dlx4.slim.antlr.SlimParser;
 import com.github.dlx4.slim.type.PrimitiveType;
@@ -11,11 +12,13 @@ import com.github.dlx4.slim.type.SlimType;
  * @author: dlx
  * @created: 2020/06/30 00:42
  */
-public class ASTEvaluator extends SlimBaseVisitor<Object> {
+public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
-//    // 栈帧管理
-//    private Stack<StackFrame> stack = new Stack<StackFrame>();
+    private final AnnotatedTree annotatedTree;
 
+    public SlimEvaluator(AnnotatedTree annotatedTree) {
+        this.annotatedTree = annotatedTree;
+    }
 
     @Override
     public Object visitBlock(SlimParser.BlockContext ctx) {
@@ -42,7 +45,7 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
             Object leftObject = left;
             Object rightObject = right;
 
-            SlimType type = PrimitiveType.Integer;
+            SlimType type = annotatedTree.getType(ctx);
 
             switch (ctx.bop.getType()) {
                 case SlimParser.ADD:
@@ -92,6 +95,11 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
         // 整数
         if (ctx.integerLiteral() != null) {
             ret = visitIntegerLiteral(ctx.integerLiteral());
+        }
+
+        // 浮点数
+        else if (ctx.floatLiteral() != null) {
+            ret = visitFloatLiteral(ctx.floatLiteral());
         }
 
         return ret;
@@ -189,6 +197,9 @@ public class ASTEvaluator extends SlimBaseVisitor<Object> {
     }
 
 
+    /**
+     * 辅助类
+     */
     private static class EvaluatorHelper {
         private static Object add(Object obj1, Object obj2, SlimType targetType) {
             Object ret = null;

@@ -1,10 +1,15 @@
 package com.github.dlx4.slim;
 
 import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.misc.Utils;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.Tree;
+import org.antlr.v4.runtime.tree.Trees;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,14 +23,72 @@ public class SlimUtils {
     // 自增ID
     private static Map<String, Integer> AUTO_INC_ID = new HashMap<>();
 
+    private static class AstTreePrinter {
+        /**
+         * Platform dependent end-of-line marker
+         */
+        public static final String Eol = System.lineSeparator();
+        /**
+         * The literal indent char(s) used for pretty-printing
+         */
+        public static final String Indents = "  ";
+        private static int level;
+
+        private AstTreePrinter() {
+        }
+
+        public static String toPrettyTree(final Tree t, final List<String> ruleNames) {
+            level = 0;
+            return process(t, ruleNames).replaceAll("(?m)^\\s+$", "").replaceAll("\\r?\\n\\r?\\n", Eol);
+        }
+
+        private static String process(final Tree t, final List<String> ruleNames) {
+            if (t.getChildCount() == 0) return Utils.escapeWhitespace(Trees.getNodeText(t, ruleNames), false);
+            StringBuilder sb = new StringBuilder();
+            sb.append(lead(level));
+            level++;
+            String s = Utils.escapeWhitespace(Trees.getNodeText(t, ruleNames), false);
+            sb.append(s + ' ');
+            for (int i = 0; i < t.getChildCount(); i++) {
+                sb.append(process(t.getChild(i), ruleNames));
+            }
+            level--;
+            sb.append(lead(level));
+            return sb.toString();
+        }
+
+        private static String lead(int level) {
+            StringBuilder sb = new StringBuilder();
+            if (level > 0) {
+                sb.append(Eol);
+                for (int cnt = 0; cnt < level; cnt++) {
+                    sb.append(Indents);
+                }
+            }
+            return sb.toString();
+        }
+    }
+
     /**
      * @param parseTree
      * @Description: 打印AST
      * @return: void
      * @Creator: dlx
      */
-    public static void printAST(ParseTree parseTree, Parser parser) {
+    public static void printAst(ParseTree parseTree, Parser parser) {
         System.out.println(parseTree.toStringTree(parser));
+    }
+
+    /**
+     * @param parseTree
+     * @Description: 打印AST
+     * @return: void
+     * @Creator: dlx
+     */
+    public static void printAstPretty(ParseTree parseTree, Parser parser) {
+        List<String> ruleNamesList = Arrays.asList(parser.getRuleNames());
+        String prettyTree = AstTreePrinter.toPrettyTree(parseTree, ruleNamesList);
+        System.out.println(prettyTree);
     }
 
     /**
