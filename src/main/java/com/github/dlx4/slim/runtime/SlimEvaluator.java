@@ -74,13 +74,19 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
         } else if (ctx.primary() != null) {
             ret = visitPrimary(ctx.primary());
+        } else if (ctx.functionCall() != null) {// functionCall
+            ret = visitFunctionCall(ctx.functionCall());
         }
         return ret;
     }
 
     @Override
     public Object visitExpressionList(SlimParser.ExpressionListContext ctx) {
-        return null;
+        Object ret = null;
+        for (SlimParser.ExpressionContext child : ctx.expression()) {
+            ret = visitExpression(child);
+        }
+        return ret;
     }
 
     @Override
@@ -193,7 +199,19 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionCall(SlimParser.FunctionCallContext ctx) {
-        return null;
+        Object ret = null;
+
+        String functionName = ctx.IDENTIFIER().getText();
+        if (functionName.equals("println")) {
+            if (ctx.expressionList() != null) {
+                Object value = visitExpressionList(ctx.expressionList());
+                System.out.println(value);
+            } else {
+                System.out.println();
+            }
+        }
+
+        return ret;
     }
 
 
@@ -201,6 +219,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
      * 辅助类
      */
     private static class EvaluatorHelper {
+
         private static Object add(Object obj1, Object obj2, SlimType targetType) {
             Object ret = null;
             if (targetType == PrimitiveType.String) {
