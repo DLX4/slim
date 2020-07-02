@@ -111,6 +111,16 @@ public class AnnotatedTree {
     }
 
     /**
+     * @param node
+     * @Description: 查找某节点的scope
+     * @return: com.github.dlx4.slim.symbol.Scope
+     * @Creator: dlx
+     */
+    public Scope getScope(ParserRuleContext node) {
+        return nodeRelateScope.get(node);
+    }
+
+    /**
      * @param scope
      * @param idName
      * @Description: 逐级scope查找variable

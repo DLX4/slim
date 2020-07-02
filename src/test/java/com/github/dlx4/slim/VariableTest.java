@@ -11,12 +11,11 @@ import java.io.IOException;
  * @author: dlx
  * @created: 2020/06/28 23:44
  */
-public class PrintTest extends BaseTest {
+public class VariableTest extends BaseTest {
 
-    // 支持打印
-    @ValueSource(strings = {"println.00.test"})
+    @ValueSource(strings = {"variable.00.test"})
     @ParameterizedTest
-    void print00(String fileName) throws IOException {
+    void variable00(String fileName) throws IOException {
 
         String script = this.getTestInput(fileName);
 

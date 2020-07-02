@@ -10,4 +10,31 @@ import com.github.dlx4.slim.symbol.Variable;
  */
 public class LeftValue {
 
+    private final Variable variable;
+    private final RtStore rtStore;
+
+    public LeftValue(RtStore store, Variable variable) {
+        this.rtStore = store;
+        this.variable = variable;
+    }
+
+    /**
+     * @param value
+     * @Description: 左值set
+     * @return: void
+     * @Creator: dlx
+     */
+    public void setValue(Object value) {
+        rtStore.setValue(variable, value);
+    }
+
+    /**
+     * @param
+     * @Description: 左值get
+     * @return: java.lang.Object
+     * @Creator: dlx
+     */
+    public Object getValue() {
+        return rtStore.getValue(variable);
+    }
 }

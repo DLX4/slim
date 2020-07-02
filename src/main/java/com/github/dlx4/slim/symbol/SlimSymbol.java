@@ -1,8 +1,7 @@
 package com.github.dlx4.slim.symbol;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -11,18 +10,23 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author: dlx
  * @created: 2020/06/29 23:25
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 public class SlimSymbol {
 
     // 符号名称
-    private String name;
+    private final String name;
 
     // 所属作用域
     private Scope enclosingScope;
 
     // 关联的AST节点
-    private ParserRuleContext ctx;
+    private final ParserRuleContext ctx;
+
+    public SlimSymbol(String name, Scope enclosingScope, ParserRuleContext ctx) {
+        this.name = name;
+        this.enclosingScope = enclosingScope;
+        this.ctx = ctx;
+    }
 
 }

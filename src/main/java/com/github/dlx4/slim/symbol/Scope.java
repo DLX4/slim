@@ -33,6 +33,16 @@ public abstract class Scope extends SlimSymbol {
     }
 
     /**
+     * @param symbol
+     * @Description: 是否包含某个Symbol
+     * @return: boolean
+     * @Creator: dlx
+     */
+    public boolean containsSymbol(SlimSymbol symbol) {
+        return symbols.contains(symbol);
+    }
+
+    /**
      * @param name
      * @Description: 从scope中获取variable
      * @return: com.github.dlx4.slim.symbol.Variable

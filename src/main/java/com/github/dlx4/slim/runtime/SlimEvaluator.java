@@ -3,6 +3,9 @@ package com.github.dlx4.slim.runtime;
 import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimBaseVisitor;
 import com.github.dlx4.slim.antlr.SlimParser;
+import com.github.dlx4.slim.symbol.BlockScope;
+import com.github.dlx4.slim.symbol.SlimSymbol;
+import com.github.dlx4.slim.symbol.Variable;
 import com.github.dlx4.slim.type.PrimitiveType;
 import com.github.dlx4.slim.type.SlimType;
 
@@ -15,14 +18,28 @@ import com.github.dlx4.slim.type.SlimType;
 public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
     private final AnnotatedTree annotatedTree;
+    private final RtStack rtStack;
 
     public SlimEvaluator(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
+        this.rtStack = new RtStack();
     }
 
     @Override
     public Object visitBlock(SlimParser.BlockContext ctx) {
-        return null;
+        BlockScope scope = (BlockScope) annotatedTree.getScope(ctx);
+        if (scope != null) {  //有些block是不对应scope的，比如函数底下的block.
+            StackFrame frame = new StackFrame(scope);
+            rtStack.push(frame);
+        }
+
+        Object ret = visitBlockStatements(ctx.blockStatements());
+
+        if (scope != null) {
+            rtStack.pop();
+        }
+
+        return ret;
     }
 
     @Override
@@ -30,6 +47,8 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         Object ret = null;
         if (ctx.statement() != null) {
             ret = visitStatement(ctx.statement());
+        } else if (ctx.variableDeclarators() != null) {
+            ret = visitVariableDeclarators(ctx.variableDeclarators());
         }
         return ret;
     }
@@ -44,6 +63,14 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
             Object leftObject = left;
             Object rightObject = right;
+
+            if (left instanceof LeftValue) {
+                leftObject = ((LeftValue) left).getValue();
+            }
+
+            if (right instanceof LeftValue) {
+                rightObject = ((LeftValue) right).getValue();
+            }
 
             SlimType type = annotatedTree.getType(ctx);
 
@@ -67,7 +94,14 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                 case SlimParser.OR:
                     ret = (Boolean) leftObject || (Boolean) rightObject;
                     break;
-
+                case SlimParser.ASSIGN:
+                    if (left instanceof LeftValue) {
+                        ((LeftValue) left).setValue(rightObject);
+                        ret = right;
+                    } else {
+                        System.out.println("Unsupported feature during assignment");
+                    }
+                    break;
                 default:
                     break;
             }
@@ -144,6 +178,13 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         if (ctx.literal() != null) {
             ret = visitLiteral(ctx.literal());
         }
+        // 变量
+        else if (ctx.IDENTIFIER() != null) {
+            SlimSymbol symbol = annotatedTree.getSymbol(ctx);
+            if (symbol instanceof Variable) {
+                ret = rtStack.getLeftValue((Variable) symbol);
+            }
+        }
 
         return ret;
     }
@@ -169,22 +210,42 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitVariableDeclarator(SlimParser.VariableDeclaratorContext ctx) {
-        return null;
+        Object ret = null;
+        LeftValue leftValue = (LeftValue) visitVariableDeclaratorId(ctx.variableDeclaratorId());
+        if (ctx.variableInitializer() != null) {
+            ret = visitVariableInitializer(ctx.variableInitializer());
+            if (ret instanceof LeftValue) {
+                ret = ((LeftValue) ret).getValue();
+            }
+            leftValue.setValue(ret);
+        }
+        return ret;
     }
 
     @Override
     public Object visitVariableDeclaratorId(SlimParser.VariableDeclaratorIdContext ctx) {
-        return null;
+        Object ret = null;
+        SlimSymbol symbol = annotatedTree.getSymbol(ctx);
+        ret = rtStack.getLeftValue((Variable) symbol);
+        return ret;
     }
 
     @Override
     public Object visitVariableDeclarators(SlimParser.VariableDeclaratorsContext ctx) {
-        return null;
+        Object ret = null;
+        for (SlimParser.VariableDeclaratorContext child : ctx.variableDeclarator()) {
+            ret = visitVariableDeclarator(child);
+        }
+        return ret;
     }
 
     @Override
     public Object visitVariableInitializer(SlimParser.VariableInitializerContext ctx) {
-        return null;
+        Object ret = null;
+        if (ctx.expression() != null) {
+            ret = visitExpression(ctx.expression());
+        }
+        return ret;
     }
 
     @Override
@@ -199,7 +260,11 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitProg(SlimParser.ProgContext ctx) {
+        rtStack.push(new StackFrame((BlockScope) annotatedTree.getScope(ctx)));
+
         Object ret = visitBlockStatements(ctx.blockStatements());
+
+        rtStack.pop();
         return ret;
     }
 
