@@ -1,2 +1,3 @@
 //支持打印
-println(12);
+println(2.3+3*5);
+println("hello world" + 666);

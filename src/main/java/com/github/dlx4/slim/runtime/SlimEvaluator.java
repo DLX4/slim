@@ -108,6 +108,12 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             ret = visitFloatLiteral(ctx.floatLiteral());
         }
 
+        // 字符串
+        else if (ctx.STRING_LITERAL() != null) {
+            String withQuotationMark = ctx.STRING_LITERAL().getText();
+            ret = withQuotationMark.substring(1, withQuotationMark.length() - 1);
+        }
+
         return ret;
     }
 
