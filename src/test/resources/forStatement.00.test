@@ -1,0 +1,4 @@
+//支持FOR
+for(int i = 0; i < 2;i++) {
+    println("hello");
+}

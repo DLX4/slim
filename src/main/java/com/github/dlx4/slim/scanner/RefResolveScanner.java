@@ -98,7 +98,7 @@ public class RefResolveScanner extends AbstractAstScanner {
                 case SlimParser.MUL:
                 case SlimParser.DIV:
                     if (type1 instanceof PrimitiveType && type2 instanceof PrimitiveType) {
-                        //类型向上对齐，比如一个int和一个float，取float
+                        // 类型向上对齐，比如一个int和一个float，取float
                         type = PrimitiveType.getUpperType(type1, type2);
                     } else {
                         annotatedTree.log("operand should be PrimitiveType for additive and multiplicative operation", ctx);

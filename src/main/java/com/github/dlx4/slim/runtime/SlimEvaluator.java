@@ -132,6 +132,76 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         } else if (ctx.functionCall() != null) {
             ret = visitFunctionCall(ctx.functionCall());
         }
+
+        // 后缀运算，例如：i++ 或 i--
+        else if (ctx.postfix != null) {
+            // 操作数1
+            Object value = visitExpression(ctx.expression(0));
+            SlimType type = annotatedTree.getType(ctx.expression(0));
+
+            LeftValue leftValue = null;
+            if (value instanceof LeftValue) {
+                leftValue = (LeftValue) value;
+                value = leftValue.getValue();
+            }
+            switch (ctx.postfix.getType()) {
+                case SlimParser.INC:
+                    if (type == PrimitiveType.Integer) {
+                        leftValue.setValue((Integer) value + 1);
+                    } else {
+                        leftValue.setValue((Long) value + 1);
+                    }
+                    ret = value;
+                    break;
+                case SlimParser.DEC:
+                    if (type == PrimitiveType.Integer) {
+                        leftValue.setValue((Integer) value - 1);
+                    } else {
+                        leftValue.setValue((long) value - 1);
+                    }
+                    ret = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // 前缀操作，例如：++i 或 --i 或!i
+        else if (ctx.prefix != null) {
+            Object value = visitExpression(ctx.expression(0));
+            SlimType type = annotatedTree.getType(ctx.expression(0));
+
+            LeftValue leftValue = null;
+            if (value instanceof LeftValue) {
+                leftValue = (LeftValue) value;
+                value = leftValue.getValue();
+            }
+            switch (ctx.prefix.getType()) {
+                case SlimParser.INC:
+                    if (type == PrimitiveType.Integer) {
+                        ret = (Integer) value + 1;
+                    } else {
+                        ret = (Long) value + 1;
+                    }
+                    leftValue.setValue(ret);
+                    break;
+                case SlimParser.DEC:
+                    if (type == PrimitiveType.Integer) {
+                        ret = (Integer) value - 1;
+                    } else {
+                        ret = (Long) value - 1;
+                    }
+                    leftValue.setValue(ret);
+                    break;
+                // !符号，逻辑非运算
+                case SlimParser.BANG:
+                    ret = !((Boolean) value);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         return ret;
     }
 
@@ -146,7 +216,13 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitForInit(SlimParser.ForInitContext ctx) {
-        return null;
+        Object ret = null;
+        if (ctx.variableDeclarators() != null) {
+            ret = visitVariableDeclarators(ctx.variableDeclarators());
+        } else if (ctx.expressionList() != null) {
+            ret = visitExpressionList(ctx.expressionList());
+        }
+        return ret;
     }
 
     @Override
@@ -222,6 +298,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             ret = visitExpression(ctx.statementExpression);
         }
 
+        // if语句
         else if (ctx.IF() != null) {
             Boolean condition = (Boolean) visitParExpression(ctx.parExpression());
             if (Boolean.TRUE == condition) {
@@ -234,6 +311,57 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         // block (blockLabel是别名)
         else if (ctx.blockLabel != null) {
             ret = visitBlock(ctx.blockLabel);
+        }
+
+        // for循环
+        else if (ctx.FOR() != null) {
+            // 压栈
+            BlockScope scope = (BlockScope) annotatedTree.getScope(ctx);
+            StackFrame frame = new StackFrame(scope);
+            rtStack.push(frame);
+
+            SlimParser.ForControlContext forControl = ctx.forControl();
+            if (forControl.enhancedForControl() != null) {
+                // 增强版for循环
+            } else {
+                // 初始化部分执行一次
+                if (forControl.forInit() != null) {
+                    ret = visitForInit(forControl.forInit());
+                }
+
+                while (true) {
+                    Boolean condition = true;
+                    if (forControl.expression() != null) {
+                        Object value = visitExpression(forControl.expression());
+                        if (value instanceof LeftValue) {
+                            condition = (Boolean) ((LeftValue) value).getValue();
+                        } else {
+                            condition = (Boolean) value;
+                        }
+                    }
+
+                    if (condition) {
+                        // 执行for的语句体
+                        ret = visitStatement(ctx.statement(0));
+
+//                        // 处理break
+//                        if (ret instanceof BreakObject) {
+//                            ret = null;
+//                            break;
+//                        }
+
+                        // 执行forUpdate
+                        if (forControl.forUpdate != null) {
+                            visitExpressionList(forControl.forUpdate);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // 出栈
+            rtStack.pop();
         }
         return ret;
     }
