@@ -1,0 +1,9 @@
+//支持IF
+int a = 23;
+int b = 11;
+if (a < b) {
+println("hello world," + a);
+} else {
+println("hello world," + b);
+}
+

@@ -28,7 +28,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
     @Override
     public Object visitBlock(SlimParser.BlockContext ctx) {
         BlockScope scope = (BlockScope) annotatedTree.getScope(ctx);
-        if (scope != null) {  //有些block是不对应scope的，比如函数底下的block.
+        if (scope != null) {
             StackFrame frame = new StackFrame(scope);
             rtStack.push(frame);
         }
@@ -72,7 +72,11 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                 rightObject = ((LeftValue) right).getValue();
             }
 
+            // 本节点数据类型
             SlimType type = annotatedTree.getType(ctx);
+            // 子节点的数据类型
+            SlimType type1 = annotatedTree.getType(ctx.expression(0));
+            SlimType type2 = annotatedTree.getType(ctx.expression(1));
 
             switch (ctx.bop.getType()) {
                 case SlimParser.ADD:
@@ -87,7 +91,24 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                 case SlimParser.DIV:
                     ret = EvaluatorHelper.div(leftObject, rightObject, type);
                     break;
-
+                case SlimParser.EQUAL:
+                    ret = EvaluatorHelper.eq(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    break;
+                case SlimParser.NOTEQUAL:
+                    ret = !EvaluatorHelper.eq(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    break;
+                case SlimParser.LE:
+                    ret = EvaluatorHelper.le(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    break;
+                case SlimParser.LT:
+                    ret = EvaluatorHelper.lt(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    break;
+                case SlimParser.GE:
+                    ret = EvaluatorHelper.ge(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    break;
+                case SlimParser.GT:
+                    ret = EvaluatorHelper.gt(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    break;
                 case SlimParser.AND:
                     ret = (Boolean) leftObject && (Boolean) rightObject;
                     break;
@@ -108,7 +129,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
         } else if (ctx.primary() != null) {
             ret = visitPrimary(ctx.primary());
-        } else if (ctx.functionCall() != null) {// functionCall
+        } else if (ctx.functionCall() != null) {
             ret = visitFunctionCall(ctx.functionCall());
         }
         return ret;
@@ -168,7 +189,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
     @Override
     public Object visitParExpression(SlimParser.ParExpressionContext ctx) {
-        return null;
+        return visitExpression(ctx.expression());
     }
 
     @Override
@@ -199,6 +220,20 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         Object ret = null;
         if (ctx.statementExpression != null) {
             ret = visitExpression(ctx.statementExpression);
+        }
+
+        else if (ctx.IF() != null) {
+            Boolean condition = (Boolean) visitParExpression(ctx.parExpression());
+            if (Boolean.TRUE == condition) {
+                ret = visitStatement(ctx.statement(0));
+            } else if (ctx.ELSE() != null) {
+                ret = visitStatement(ctx.statement(1));
+            }
+        }
+
+        // block (blockLabel是别名)
+        else if (ctx.blockLabel != null) {
+            ret = visitBlock(ctx.blockLabel);
         }
         return ret;
     }
@@ -363,7 +398,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             return ret;
         }
 
-        private static Boolean EQ(Object obj1, Object obj2, SlimType targetType) {
+        private static Boolean eq(Object obj1, Object obj2, SlimType targetType) {
             Boolean ret = null;
             if (targetType == PrimitiveType.Integer) {
                 ret = ((Number) obj1).intValue() == ((Number) obj2).intValue();
@@ -376,7 +411,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             } else if (targetType == PrimitiveType.Short) {
                 ret = ((Number) obj1).shortValue() == ((Number) obj2).shortValue();
             }
-            //对于对象实例、函数，直接比较对象引用
+            // 对于对象实例、函数，直接比较对象引用
             else {
                 ret = obj1 == obj2;
             }
@@ -384,7 +419,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             return ret;
         }
 
-        private static Object GE(Object obj1, Object obj2, SlimType targetType) {
+        private static Object ge(Object obj1, Object obj2, SlimType targetType) {
             Object ret = null;
             if (targetType == PrimitiveType.Integer) {
                 ret = ((Number) obj1).intValue() >= ((Number) obj2).intValue();
@@ -401,7 +436,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             return ret;
         }
 
-        private static Object GT(Object obj1, Object obj2, SlimType targetType) {
+        private static Object gt(Object obj1, Object obj2, SlimType targetType) {
             Object ret = null;
             if (targetType == PrimitiveType.Integer) {
                 ret = ((Number) obj1).intValue() > ((Number) obj2).intValue();
@@ -418,7 +453,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             return ret;
         }
 
-        private static Object LE(Object obj1, Object obj2, SlimType targetType) {
+        private static Object le(Object obj1, Object obj2, SlimType targetType) {
             Object ret = null;
             if (targetType == PrimitiveType.Integer) {
                 ret = ((Number) obj1).intValue() <= ((Number) obj2).intValue();
@@ -435,7 +470,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             return ret;
         }
 
-        private static Object LT(Object obj1, Object obj2, SlimType targetType) {
+        private static Object lt(Object obj1, Object obj2, SlimType targetType) {
             Object ret = null;
             if (targetType == PrimitiveType.Integer) {
                 ret = ((Number) obj1).intValue() < ((Number) obj2).intValue();

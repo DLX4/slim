@@ -37,4 +37,9 @@ public class LeftValue {
     public Object getValue() {
         return rtStore.getValue(variable);
     }
+
+    @Override
+    public String toString() {
+        return getValue().toString();
+    }
 }
