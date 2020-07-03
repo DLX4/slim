@@ -2,6 +2,8 @@ package com.github.dlx4.slim.symbol;
 
 import com.github.dlx4.slim.type.SlimType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -10,11 +12,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author: dlx
  * @created: 2020/06/30 22:13
  */
-@Data
+@Setter
+@Getter
 public class Variable extends SlimSymbol {
 
     // 变量类型
-    protected SlimType type = null;
+    private SlimType type = null;
 
     public Variable(String name, Scope enclosingScope, ParserRuleContext ctx) {
         super(name, enclosingScope, ctx);
