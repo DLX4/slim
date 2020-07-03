@@ -344,11 +344,11 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                         // 执行for的语句体
                         ret = visitStatement(ctx.statement(0));
 
-//                        // 处理break
-//                        if (ret instanceof BreakObject) {
-//                            ret = null;
-//                            break;
-//                        }
+                        // 处理break
+                        if (ret instanceof Break) {
+                            ret = null;
+                            break;
+                        }
 
                         // 执行forUpdate
                         if (forControl.forUpdate != null) {
@@ -362,6 +362,11 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
             // 出栈
             rtStack.pop();
+        }
+
+        // break语句
+        else if (ctx.BREAK() != null) {
+            ret = Break.instance();
         }
         return ret;
     }
@@ -416,6 +421,11 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         Object ret = null;
         for (SlimParser.BlockStatementContext child : ctx.blockStatement()) {
             ret = visitBlockStatement(child);
+
+            // 如果返回的是break，那么不执行下面的语句
+            if (ret instanceof Break) {
+                break;
+            }
         }
 
         return ret;
