@@ -1,7 +1,6 @@
 package com.github.dlx4.slim.symbol;
 
 import com.github.dlx4.slim.type.SlimType;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;

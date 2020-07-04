@@ -11,23 +11,11 @@ import java.io.IOException;
  * @author: dlx
  * @created: 2020/06/28 23:44
  */
-public class VariableTest extends BaseTest {
+public class ReturnTest extends BaseTest {
 
-    @ValueSource(strings = {"variable.00.test"})
+    @ValueSource(strings = {"return.00.test"})
     @ParameterizedTest
-    void variable00(String fileName) throws IOException {
-
-        String script = this.getTestInput(fileName);
-
-        SlimCompiler compiler = new SlimCompiler();
-        AnnotatedTree at = compiler.compile(script);
-        Object result = compiler.execute(at);
-        System.out.println(result);
-    }
-
-    @ValueSource(strings = {"variable.01.test"})
-    @ParameterizedTest
-    void variable01(String fileName) throws IOException {
+    void return00(String fileName) throws IOException {
 
         String script = this.getTestInput(fileName);
 

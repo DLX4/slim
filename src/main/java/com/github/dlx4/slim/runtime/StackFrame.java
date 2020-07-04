@@ -18,10 +18,10 @@ public class StackFrame {
 
     // frame对应的scope
     private final Scope scope;
-    // parent scope所对应的frame
-    private StackFrame parentFrame;
     // 变量存储的store
     private final RtStore rtStore;
+    // parent scope所对应的frame
+    private StackFrame parentFrame;
 
     public StackFrame(BlockScope scope) {
         this.scope = scope;

@@ -16,12 +16,10 @@ public class SlimSymbol {
 
     // 符号名称
     private final String name;
-
-    // 所属作用域
-    private Scope enclosingScope;
-
     // 关联的AST节点
     private final ParserRuleContext ctx;
+    // 所属作用域
+    private Scope enclosingScope;
 
     public SlimSymbol(String name, Scope enclosingScope, ParserRuleContext ctx) {
         this.name = name;

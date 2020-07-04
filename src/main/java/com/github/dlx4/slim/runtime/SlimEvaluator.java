@@ -344,9 +344,14 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                         // 执行for的语句体
                         ret = visitStatement(ctx.statement(0));
 
-                        // 处理break
+                        // break退出
                         if (ret instanceof Break) {
                             ret = null;
+                            break;
+                        }
+
+                        // return退出
+                        else if (ret instanceof Return) {
                             break;
                         }
 
@@ -367,6 +372,20 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         // break语句
         else if (ctx.BREAK() != null) {
             ret = Break.instance();
+        }
+
+        // return语句
+        else if (ctx.RETURN() != null) {
+            if (ctx.expression() != null) {
+                ret = visitExpression(ctx.expression());
+
+                if (ret instanceof LeftValue) {
+                    ret = ((LeftValue) ret).getValue();
+                }
+            }
+
+            // 包装return语句的返回值
+            ret = new Return.ReturnBuilder().value(ret).build();
         }
         return ret;
     }
@@ -422,8 +441,13 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         for (SlimParser.BlockStatementContext child : ctx.blockStatement()) {
             ret = visitBlockStatement(child);
 
-            // 如果返回的是break，那么不执行下面的语句
+            // break跳过下面语句
             if (ret instanceof Break) {
+                break;
+            }
+
+            // return跳过下面语句
+            else if (ret instanceof Return) {
                 break;
             }
         }

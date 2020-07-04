@@ -19,16 +19,6 @@ public class LeftValue {
     }
 
     /**
-     * @param value
-     * @Description: 左值set
-     * @return: void
-     * @Creator: dlx
-     */
-    public void setValue(Object value) {
-        rtStore.setValue(variable, value);
-    }
-
-    /**
      * @param
      * @Description: 左值get
      * @return: java.lang.Object
@@ -36,6 +26,16 @@ public class LeftValue {
      */
     public Object getValue() {
         return rtStore.getValue(variable);
+    }
+
+    /**
+     * @param value
+     * @Description: 左值set
+     * @return: void
+     * @Creator: dlx
+     */
+    public void setValue(Object value) {
+        rtStore.setValue(variable, value);
     }
 
     @Override

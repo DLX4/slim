@@ -1,0 +1,4 @@
+//支持return
+int a = 1;
+a++;
+return a;
