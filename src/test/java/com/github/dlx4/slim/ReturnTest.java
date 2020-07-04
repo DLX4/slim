@@ -1,5 +1,7 @@
 package com.github.dlx4.slim;
 
+import com.github.dlx4.slim.runtime.Return;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -22,7 +24,19 @@ public class ReturnTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        System.out.println(result);
+        Assertions.assertEquals(((Return)result).getValue(), 2);
+    }
+
+    @ValueSource(strings = {"return.01.test"})
+    @ParameterizedTest
+    void return01(String fileName) throws IOException {
+
+        String script = this.getTestInput(fileName);
+
+        SlimCompiler compiler = new SlimCompiler();
+        AnnotatedTree at = compiler.compile(script);
+        Object result = compiler.execute(at);
+        Assertions.assertEquals(((Return)result).getValue(), "exit");
     }
 
 }

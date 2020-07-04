@@ -1,5 +1,7 @@
 package com.github.dlx4.slim;
 
+import com.github.dlx4.slim.runtime.Return;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -22,7 +24,7 @@ public class VariableTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        System.out.println(result);
+        Assertions.assertEquals(((Return)result).getValue(), 45);
     }
 
     @ValueSource(strings = {"variable.01.test"})
@@ -34,7 +36,7 @@ public class VariableTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        System.out.println(result);
+        Assertions.assertEquals(((Return)result).getValue(), 24);
     }
 
 }

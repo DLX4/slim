@@ -1,8 +1,5 @@
 package com.github.dlx4.slim;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import java.io.IOException;
 
 /**
@@ -13,14 +10,14 @@ import java.io.IOException;
  */
 public class BaseTest {
 
-    @ValueSource(strings = {"expression.test"})
-    @ParameterizedTest
-    void read(String fileName) throws IOException {
-
-        String script = this.getTestInput(fileName);
-
-        System.out.println(script);
-    }
+//    @ValueSource(strings = {"expression.test"})
+//    @ParameterizedTest
+//    void read(String fileName) throws IOException {
+//
+//        String script = this.getTestInput(fileName);
+//
+//        System.out.println(script);
+//    }
 
     /**
      * @param fileName

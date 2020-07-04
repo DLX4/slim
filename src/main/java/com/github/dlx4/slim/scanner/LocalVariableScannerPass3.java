@@ -10,14 +10,14 @@ import com.github.dlx4.slim.type.VoidType;
 
 /**
  * @program: slim
- * @description: 扫描变量
+ * @description: 扫描变量（二级，作用域内部）
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
-public class LocalVariableScanner extends AbstractAstScanner {
+public class LocalVariableScannerPass3 extends AbstractAstScanner {
 
 
-    public LocalVariableScanner(AnnotatedTree annotatedTree) {
+    public LocalVariableScannerPass3(AnnotatedTree annotatedTree) {
         super(annotatedTree);
     }
 
@@ -64,12 +64,10 @@ public class LocalVariableScanner extends AbstractAstScanner {
 
     @Override
     public void exitTypeType(SlimParser.TypeTypeContext ctx) {
-        /*
-        冒泡，将下级的属性标注在本级 ()
-        typeType
-        : (classOrInterfaceType| functionType | primitiveType) ('[' ']')*
-        ;
-        */
+        //        冒泡，将下级的属性标注在本级 ()
+        //        typeType
+        //        : (classOrInterfaceType| functionType | primitiveType) ('[' ']')*
+        //        ;
         if (ctx.primitiveType() != null) {
             SlimType type = annotatedTree.getType(ctx.primitiveType());
             annotatedTree.relateTypeToNode(type, ctx);

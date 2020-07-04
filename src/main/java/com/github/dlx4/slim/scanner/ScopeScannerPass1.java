@@ -3,6 +3,7 @@ package com.github.dlx4.slim.scanner;
 import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimParser;
 import com.github.dlx4.slim.symbol.BlockScope;
+import com.github.dlx4.slim.symbol.Function;
 import com.github.dlx4.slim.symbol.RootScope;
 import com.github.dlx4.slim.symbol.Scope;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -15,11 +16,11 @@ import java.util.Stack;
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
-public class ScopeScanner extends AbstractAstScanner {
+public class ScopeScannerPass1 extends AbstractAstScanner {
 
     private final Stack<Scope> scopeStack = new Stack<>();
 
-    public ScopeScanner(AnnotatedTree annotatedTree) {
+    public ScopeScannerPass1(AnnotatedTree annotatedTree) {
         super(annotatedTree);
     }
 
@@ -70,8 +71,6 @@ public class ScopeScanner extends AbstractAstScanner {
 
     @Override
     public void enterBlock(SlimParser.BlockContext ctx) {
-
-        // 对于函数，不需要再额外建一个scope
         if (!(ctx.parent instanceof SlimParser.FunctionBodyContext)) {
             BlockScope scope = new BlockScope(currentScope(), ctx);
             currentScope().addSymbol(scope);
@@ -104,16 +103,22 @@ public class ScopeScanner extends AbstractAstScanner {
             popScope();
         }
     }
-//TODO
-//    @Override
-//    public void enterFunctionDeclaration(SlimParser.FunctionDeclarationContext ctx) {
-//
-//    }
-//
-//    @Override
-//    public void exitFunctionDeclaration(SlimParser.FunctionDeclarationContext ctx) {
-//
-//    }
+
+    @Override
+    public void enterFunctionDeclaration(SlimParser.FunctionDeclarationContext ctx) {
+        String idName = ctx.IDENTIFIER().getText();
+
+        // 现在只考虑function的scope, function的类型信息后续再处理 @See RefResolveScannerPass3
+        Function function = new Function(idName, currentScope(), ctx);
+
+        currentScope().addSymbol(function);
+        pushScope(function, ctx);
+    }
+
+    @Override
+    public void exitFunctionDeclaration(SlimParser.FunctionDeclarationContext ctx) {
+        popScope();
+    }
 
 
 //    @Override

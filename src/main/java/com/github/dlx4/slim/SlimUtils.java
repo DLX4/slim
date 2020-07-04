@@ -104,7 +104,7 @@ public class SlimUtils {
 
     /**
      * @param cls
-     * @Description: 生成symbol的name
+     * @Description: 生成symbol的name, 给那些没有名字的symbol赋予名字
      * @return: java.lang.String
      * @Creator: dlx
      */

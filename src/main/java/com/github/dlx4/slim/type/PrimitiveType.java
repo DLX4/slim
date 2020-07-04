@@ -1,14 +1,12 @@
 package com.github.dlx4.slim.type;
 
-import com.github.dlx4.slim.symbol.Scope;
-
 /**
  * @program: slim
  * @description: 基本类型
  * @author: dlx
  * @created: 2020/06/30 00:37
  */
-public class PrimitiveType implements SlimType {
+public class PrimitiveType extends SlimType {
 
     // 把常见的基础数据类型都定义出来
     public static PrimitiveType Integer = new PrimitiveType("Integer");
@@ -21,10 +19,9 @@ public class PrimitiveType implements SlimType {
     public static PrimitiveType Short = new PrimitiveType("Short");
     public static PrimitiveType String = new PrimitiveType("Short"); //增加String为基础类型
     public static PrimitiveType Null = new PrimitiveType("null");
-    private String name = null;
 
     private PrimitiveType(String name) {
-        this.name = name;
+        super(name);
     }
 
     /**
@@ -35,7 +32,7 @@ public class PrimitiveType implements SlimType {
      * @return
      */
     public static PrimitiveType getUpperType(SlimType type1, SlimType type2) {
-        PrimitiveType type = null;
+        PrimitiveType type;
         if (type1 == PrimitiveType.String || type2 == PrimitiveType.String) {
             type = PrimitiveType.String;
         } else if (type1 == PrimitiveType.Double || type2 == PrimitiveType.Double) {
@@ -49,13 +46,13 @@ public class PrimitiveType implements SlimType {
         } else if (type1 == PrimitiveType.Short || type2 == PrimitiveType.Short) {
             type = PrimitiveType.Short;
         } else {
-            type = PrimitiveType.Byte; // TODO 以上这些规则有没有漏洞？
+            type = PrimitiveType.Byte;
         }
         return type;
     }
 
     /**
-     * 某个类型是不是数值型的（以便进行数值型运算）
+     * 是否是数值型
      *
      * @param type
      * @return
@@ -76,21 +73,6 @@ public class PrimitiveType implements SlimType {
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public Scope getEnclosingScope() {
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
-    public boolean isType(SlimType type) {
-        return this == type;
     }
 
 }

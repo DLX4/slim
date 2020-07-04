@@ -1,0 +1,8 @@
+//支持return
+for(int i = 0; i < 10;i++) {
+    if (i == 1) {
+        return "exit";
+    }
+    println("hello");
+}
+

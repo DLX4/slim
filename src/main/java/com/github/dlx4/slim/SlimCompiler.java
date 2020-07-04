@@ -3,9 +3,9 @@ package com.github.dlx4.slim;
 import com.github.dlx4.slim.antlr.SlimLexer;
 import com.github.dlx4.slim.antlr.SlimParser;
 import com.github.dlx4.slim.runtime.SlimEvaluator;
-import com.github.dlx4.slim.scanner.RefResolveScanner;
-import com.github.dlx4.slim.scanner.ScopeScanner;
-import com.github.dlx4.slim.scanner.VariableScanner;
+import com.github.dlx4.slim.scanner.RefResolveScannerPass3;
+import com.github.dlx4.slim.scanner.ScopeScannerPass1;
+import com.github.dlx4.slim.scanner.VariableScannerPass2;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -43,15 +43,15 @@ public class SlimCompiler {
         ParseTreeWalker walker = new ParseTreeWalker();
 
         // 扫描scope
-        ScopeScanner scopeScanner = new ScopeScanner(annotatedTree);
+        ScopeScannerPass1 scopeScanner = new ScopeScannerPass1(annotatedTree);
         walker.walk(scopeScanner, ast);
 
         // 扫描变量，标注类型
-        VariableScanner variableScanner = new VariableScanner(annotatedTree);
+        VariableScannerPass2 variableScanner = new VariableScannerPass2(annotatedTree);
         walker.walk(variableScanner, ast);
 
         // 引用消解扫描
-        RefResolveScanner refResolveScanner = new RefResolveScanner(annotatedTree);
+        RefResolveScannerPass3 refResolveScanner = new RefResolveScannerPass3(annotatedTree);
         walker.walk(refResolveScanner, ast);
 
         return annotatedTree;

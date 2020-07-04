@@ -1,5 +1,7 @@
 package com.github.dlx4.slim;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -23,8 +25,7 @@ public class ExpressionTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        System.out.println(result);
-        // 17
+        Assertions.assertEquals(result, 17);
     }
 
     // 支持浮点数表达式
@@ -37,7 +38,7 @@ public class ExpressionTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        System.out.println(result);
+        Assertions.assertEquals(result.toString(), 17.3+"");
     }
 
 }

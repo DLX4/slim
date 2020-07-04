@@ -1,6 +1,7 @@
 package com.github.dlx4.slim.runtime;
 
 import lombok.Builder;
+import lombok.Getter;
 
 /**
  * @program: slim
@@ -9,6 +10,7 @@ import lombok.Builder;
  * @created: 2020/07/04 00:11
  */
 @Builder
+@Getter
 public class Return {
     private Object value;
 

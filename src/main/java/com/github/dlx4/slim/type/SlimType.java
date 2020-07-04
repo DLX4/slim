@@ -1,6 +1,8 @@
 package com.github.dlx4.slim.type;
 
 import com.github.dlx4.slim.symbol.Scope;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * @program: slim
@@ -8,11 +10,15 @@ import com.github.dlx4.slim.symbol.Scope;
  * @author: dlx
  * @created: 2020/06/30 00:32
  */
-public interface SlimType {
+@Getter
+public abstract class SlimType {
 
-    String getName();
+    protected String name;
+    protected Scope enclosingScope;
 
-    Scope getEnclosingScope();
+    public SlimType(String name) {
+        this.name = name;
+    }
 
     /**
      * @param type
@@ -20,5 +26,16 @@ public interface SlimType {
      * @return: boolean
      * @Creator: dlx
      */
-    boolean isType(SlimType type);
+    public boolean is(SlimType type) {
+        return this == type;
+    }
+
+    @Override
+    public String toString() {
+        if (name == null) {
+            return "";
+        } else {
+            return this.name;
+        }
+    }
 }

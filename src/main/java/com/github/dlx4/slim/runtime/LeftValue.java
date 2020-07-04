@@ -1,6 +1,7 @@
 package com.github.dlx4.slim.runtime;
 
 import com.github.dlx4.slim.symbol.Variable;
+import lombok.Builder;
 
 /**
  * @program: slim
@@ -8,15 +9,16 @@ import com.github.dlx4.slim.symbol.Variable;
  * @author: dlx
  * @created: 2020/07/01 23:33
  */
+@Builder
 public class LeftValue {
 
     private final Variable variable;
     private final RtStore rtStore;
 
-    public LeftValue(RtStore store, Variable variable) {
-        this.rtStore = store;
-        this.variable = variable;
-    }
+//    public LeftValue(RtStore store, Variable variable) {
+//        this.rtStore = store;
+//        this.variable = variable;
+//    }
 
     /**
      * @param
@@ -40,6 +42,10 @@ public class LeftValue {
 
     @Override
     public String toString() {
-        return getValue().toString();
+        if (rtStore == null || getValue() == null) {
+            return "";
+        } else {
+            return getValue().toString();
+        }
     }
 }

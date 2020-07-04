@@ -12,23 +12,23 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 /**
  * @program: slim
- * @description: 引用消解扫描
+ * @description: 作用域本地变量扫描、变量引用消解、 类型推导
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
-public class RefResolveScanner extends AbstractAstScanner {
+public class RefResolveScannerPass3 extends AbstractAstScanner {
 
     private final ParseTreeWalker walker = new ParseTreeWalker();
-    private final LocalVariableScanner localVariableScanner;
+    private final LocalVariableScannerPass3 localVariableScanner;
 
-    public RefResolveScanner(AnnotatedTree annotatedTree) {
+    public RefResolveScannerPass3(AnnotatedTree annotatedTree) {
         super(annotatedTree);
-        localVariableScanner = new LocalVariableScanner(annotatedTree);
+        localVariableScanner = new LocalVariableScannerPass3(annotatedTree);
     }
 
-    // 把本地变量加到符号表。本地变量必须是边添加，边解析，不能先添加后解析，否则会引起引用消解的错误。
     @Override
     public void enterVariableDeclarators(SlimParser.VariableDeclaratorsContext ctx) {
+        // 把本地变量加到符号表。本地变量必须是边添加，边解析，不能先添加后解析，否则会引起引用消解的错误。
         Scope scope = annotatedTree.getEnclosingScope(ctx);
         if (scope instanceof BlockScope) {
             walker.walk(localVariableScanner, ctx);
@@ -65,7 +65,7 @@ public class RefResolveScanner extends AbstractAstScanner {
         annotatedTree.relateTypeToNode(type, ctx);
     }
 
-    //消解处理点符号表达式的层层引用
+    // 消解处理点符号表达式的层层引用
     @Override
     public void exitExpression(SlimParser.ExpressionContext ctx) {
         SlimType type = null;
@@ -161,7 +161,6 @@ public class RefResolveScanner extends AbstractAstScanner {
         } else if (ctx.floatLiteral() != null) {
             annotatedTree.relateTypeToNode(PrimitiveType.Float, ctx);
         }
-
     }
 
 }

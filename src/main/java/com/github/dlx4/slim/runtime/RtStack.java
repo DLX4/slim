@@ -33,7 +33,10 @@ public class RtStack {
             frame = frame.getParentFrame();
         }
 
-        LeftValue leftValue = new LeftValue(store, variable);
+        LeftValue leftValue = LeftValue.builder()
+                .rtStore(store)
+                .variable(variable)
+                .build();
 
         return leftValue;
     }

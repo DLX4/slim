@@ -2,9 +2,9 @@
 int a = 23;
 int b = 11;
 if (a < b) {
-println("hello world," + a);
+return a;
 } else {
-println("hello world," + b);
+return b;
 }
 
 
