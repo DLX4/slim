@@ -538,6 +538,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             } else {
                 System.out.println();
             }
+            return null;
         }
 
         FunctionRtStore store = annotatedTree.getFunction(ctx);
