@@ -9,6 +9,9 @@ import com.github.dlx4.slim.symbol.Variable;
 import com.github.dlx4.slim.type.PrimitiveType;
 import com.github.dlx4.slim.type.SlimType;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @program: slim
  * @description: AST解析器
@@ -465,9 +468,67 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         return ret;
     }
 
+    /**
+     * 执行一个函数的方法体。需要先设置参数值，然后再执行代码。
+     *
+     * @param store
+     * @param paramValues
+     * @return
+     */
+    private Object functionCall(FunctionRtStore store, List<Object> paramValues) {
+        Object ret;
+
+        //添加函数的栈桢
+        StackFrame functionFrame = new StackFrame(store);
+        rtStack.push(functionFrame);
+
+        // 给参数赋值，这些值进入functionFrame
+        SlimParser.FunctionDeclarationContext functionCode = (SlimParser.FunctionDeclarationContext) store.getFunction().getCtx();
+        if (functionCode.formalParameters().formalParameterList() != null) {
+            for (int i = 0; i < functionCode.formalParameters().formalParameterList().formalParameter().size(); i++) {
+                SlimParser.FormalParameterContext param = functionCode.formalParameters().formalParameterList().formalParameter(i);
+                LeftValue lValue = (LeftValue) visitVariableDeclaratorId(param.variableDeclaratorId());
+                lValue.setValue(paramValues.get(i));
+            }
+        }
+
+        // 调用函数（方法）体
+        ret = visitFunctionDeclaration(functionCode);
+
+        // 弹出StackFrame
+        rtStack.pop(); //函数的栈桢
+
+        // 如果由一个return语句返回，真实返回值会被封装在一个ReturnObject里。
+        if (ret instanceof Return) {
+            ret = ((Return) ret).getValue();
+        }
+
+        return ret;
+    }
+
+    /**
+     * 计算运行时某个函数调用时的参数值
+     *
+     * @param ctx
+     * @return
+     */
+    public List<Object> calcParamValues(SlimParser.FunctionCallContext ctx) {
+        List<Object> paramValues = new LinkedList<Object>();
+        if (ctx.expressionList() != null) {
+            for (SlimParser.ExpressionContext exp : ctx.expressionList().expression()) {
+                Object value = visitExpression(exp);
+                if (value instanceof LeftValue) {
+                    value = ((LeftValue) value).getValue();
+                }
+                paramValues.add(value);
+            }
+        }
+        return paramValues;
+    }
+
     @Override
     public Object visitFunctionCall(SlimParser.FunctionCallContext ctx) {
-        Object ret = null;
+        Object ret;
 
         String functionName = ctx.IDENTIFIER().getText();
         if (functionName.equals("println")) {
@@ -478,6 +539,15 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                 System.out.println();
             }
         }
+
+        FunctionRtStore store = annotatedTree.getFunction(ctx);
+
+        // 计算参数值
+        List<Object> paramValues = calcParamValues(ctx);
+
+        System.out.println("\n>>FunctionCall : " + ctx.getText());
+
+        ret = functionCall(store, paramValues);
 
         return ret;
     }

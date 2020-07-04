@@ -28,6 +28,11 @@ public class StackFrame {
         this.rtStore = new RtStore();
     }
 
+    public StackFrame(FunctionRtStore functionRtStore) {
+        this.scope = functionRtStore.getFunction();
+        this.rtStore = functionRtStore;
+    }
+
     /**
      * 是否包含某个变量
      *

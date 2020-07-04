@@ -22,32 +22,35 @@ public class VariableScannerPass2 extends AbstractAstScanner {
         super(annotatedTree);
     }
 
-    // 函数变量
+    // 变量声明完毕
     @Override
     public void exitVariableDeclarators(SlimParser.VariableDeclaratorsContext ctx) {
-//        SlimType type = annotatedTree.getType(ctx.typeType());
-//
-//        for (SlimParser.VariableDeclaratorContext child : ctx.variableDeclarator()) {
-//            Variable variable = (Variable) annotatedTree.getSymbol(child.variableDeclaratorId());
-//            variable.setType(type);
-//        }
+        // 设置的变量类型
+        SlimType type = annotatedTree.getType(ctx.typeType());
+
+        // 给声明的一堆变量设置类型
+        for (SlimParser.VariableDeclaratorContext child : ctx.variableDeclarator()) {
+            Variable variable = (Variable) annotatedTree.getSymbol(child.variableDeclaratorId());
+            variable.setType(type);
+        }
     }
 
-    // 函数变量
+    // 变量声明
     @Override
     public void enterVariableDeclaratorId(SlimParser.VariableDeclaratorIdContext ctx) {
-//        String idName = ctx.IDENTIFIER().getText();
-//        Scope scope = annotatedTree.getEnclosingScope(ctx);
-//
-//        Variable variable = new Variable(idName, scope, ctx);
-//
-//        // 变量查重
-//        if (scope.getVariable(idName) != null) {
-//            annotatedTree.log("Variable or parameter already Declared: " + idName, ctx);
-//        }
-//
-//        scope.addSymbol(variable);
-//        annotatedTree.relateSymbolToNode(variable, ctx);
+        String idName = ctx.IDENTIFIER().getText();
+        Scope scope = annotatedTree.getEnclosingScope(ctx);
+
+        // 第一步只把类的成员变量入符号表。在变量消解时，再把本地变量加入符号表，一边Enter，一边消解。
+        Variable variable = new Variable(idName, scope, ctx);
+
+        // 变量查重
+        if (scope.getVariable(idName) != null) {
+            annotatedTree.log("Variable or parameter already Declared: " + idName, ctx);
+        }
+
+        scope.addSymbol(variable);
+        annotatedTree.relateSymbolToNode(variable, ctx);
     }
 
     @Override
@@ -69,11 +72,12 @@ public class VariableScannerPass2 extends AbstractAstScanner {
         }
     }
 
-    // 设置函数的返回值类型
+
     @Override
     public void exitFunctionDeclaration(SlimParser.FunctionDeclarationContext ctx) {
         Function function = (Function) annotatedTree.getScope(ctx);
         if (ctx.typeTypeOrVoid() != null) {
+            // 设置函数的返回值类型
             function.setReturnType(annotatedTree.getType(ctx.typeTypeOrVoid()));
         }
 

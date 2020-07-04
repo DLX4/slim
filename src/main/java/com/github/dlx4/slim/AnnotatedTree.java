@@ -1,5 +1,8 @@
 package com.github.dlx4.slim;
 
+import com.github.dlx4.slim.antlr.SlimParser;
+import com.github.dlx4.slim.runtime.FunctionRtStore;
+import com.github.dlx4.slim.symbol.Function;
 import com.github.dlx4.slim.symbol.Scope;
 import com.github.dlx4.slim.symbol.SlimSymbol;
 import com.github.dlx4.slim.symbol.Variable;
@@ -121,6 +124,52 @@ public class AnnotatedTree {
     }
 
     /**
+     * @param ctx
+     * @Description: 根据函数调用的上下文，返回一个FunctionObject。
+     * 对于函数类型的变量，这个functionObject是存在变量里的；
+     * 对于普通的函数调用，此时创建一个。
+     * @return: com.github.dlx4.slim.symbol.Function
+     * @Creator: dlx
+     */
+    public FunctionRtStore getFunction(SlimParser.FunctionCallContext ctx) {
+        if (ctx.IDENTIFIER() == null) return null;  //暂时不支持this和super
+
+        Function function = null;
+        FunctionRtStore store = null;
+
+        SlimSymbol symbol = getSymbol(ctx);
+        // 函数类型的变量
+        if (symbol instanceof Variable) {
+            // TODO
+//            Variable variable = (Variable) symbol;
+//            LValue lValue = getLValue(variable);
+//            Object value = lValue.getValue();
+//            if (value instanceof FunctionObject) {
+//                functionObject = (FunctionObject) value;
+//                function = functionObject.function;
+//            }
+        }
+        // 普通函数
+        else if (symbol instanceof Function) {
+            function = (Function) symbol;
+        }
+        // 报错
+        else {
+            // 这是调用时的名称，不一定是真正的函数名，还可能是函数类型的变量名
+            String functionName = ctx.IDENTIFIER().getText();
+            log("unable to find function or function variable " + functionName, ctx);
+            return null;
+        }
+
+        if (store == null) {
+            store = new FunctionRtStore(function);
+        }
+
+        return store;
+    }
+
+
+    /**
      * @param scope
      * @param idName
      * @Description: 逐级scope查找variable
@@ -135,6 +184,24 @@ public class AnnotatedTree {
         }
         return ret;
     }
+
+    /**
+     * 通过方法的名称和方法签名查找Function。逐级Scope查找。
+     *
+     * @param scope
+     * @param idName
+     * @param paramTypes
+     * @return
+     */
+    public Function lookupFunction(Scope scope, String idName, List<SlimType> paramTypes) {
+        Function ret = scope.getFunction(idName, paramTypes);
+
+        if (ret == null && scope.getEnclosingScope() != null) {
+            ret = lookupFunction(scope.getEnclosingScope(), idName, paramTypes);
+        }
+        return ret;
+    }
+
 
     /**
      * @param message

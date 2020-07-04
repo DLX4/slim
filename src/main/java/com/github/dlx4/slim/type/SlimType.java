@@ -1,7 +1,6 @@
 package com.github.dlx4.slim.type;
 
 import com.github.dlx4.slim.symbol.Scope;
-import lombok.Builder;
 import lombok.Getter;
 
 /**

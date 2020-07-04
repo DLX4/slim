@@ -19,9 +19,9 @@ import java.util.List;
 public class DefaultFunctionType extends SlimType implements FunctionType {
 
     private final String name = null;
+    private final List<SlimType> paramTypes = new LinkedList<>();
     private Scope enclosingScope = null;
     private SlimType returnType = null;
-    private final List<SlimType> paramTypes = new LinkedList<>();
 
     public DefaultFunctionType() {
         super(SlimUtils.generateSymbolName(FunctionType.class));

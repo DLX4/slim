@@ -2,13 +2,13 @@ package com.github.dlx4.slim.scanner;
 
 import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimParser;
-import com.github.dlx4.slim.symbol.BlockScope;
-import com.github.dlx4.slim.symbol.Scope;
-import com.github.dlx4.slim.symbol.SlimSymbol;
-import com.github.dlx4.slim.symbol.Variable;
+import com.github.dlx4.slim.symbol.*;
 import com.github.dlx4.slim.type.PrimitiveType;
 import com.github.dlx4.slim.type.SlimType;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @program: slim
@@ -33,6 +33,49 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
         if (scope instanceof BlockScope) {
             walker.walk(localVariableScanner, ctx);
         }
+    }
+
+    /**
+     * 获得函数的参数列表
+     *
+     * @param ctx
+     * @return
+     */
+    private List<SlimType> getParamTypes(SlimParser.FunctionCallContext ctx) {
+        List<SlimType> paramTypes = new LinkedList<>();
+        if (ctx.expressionList() != null) {
+            for (SlimParser.ExpressionContext exp : ctx.expressionList().expression()) {
+                SlimType type = annotatedTree.getType(exp);
+                paramTypes.add(type);
+            }
+        }
+        return paramTypes;
+    }
+
+    @Override
+    public void exitFunctionCall(SlimParser.FunctionCallContext ctx) {
+
+        if (ctx.IDENTIFIER().getText().equals("println")) {
+            return;
+        }
+
+        String idName = ctx.IDENTIFIER().getText();
+
+        // 获得参数类型，这些类型已经在表达式中推断出来
+        List<SlimType> paramTypes = getParamTypes(ctx);
+
+        boolean found = false;
+        Scope scope = annotatedTree.getEnclosingScope(ctx);
+        // 从当前Scope逐级查找函数(或方法)
+        if (!found) {
+            Function function = annotatedTree.lookupFunction(scope, idName, paramTypes);
+            if (function != null) {
+                found = true;
+                annotatedTree.relateSymbolToNode(function, ctx);
+                annotatedTree.relateTypeToNode(function.returnType(), ctx);
+            }
+        }
+
     }
 
     @Override

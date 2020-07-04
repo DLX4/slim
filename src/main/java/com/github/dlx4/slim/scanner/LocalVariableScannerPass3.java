@@ -2,7 +2,6 @@ package com.github.dlx4.slim.scanner;
 
 import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimParser;
-import com.github.dlx4.slim.symbol.Scope;
 import com.github.dlx4.slim.symbol.Variable;
 import com.github.dlx4.slim.type.PrimitiveType;
 import com.github.dlx4.slim.type.SlimType;
@@ -37,19 +36,19 @@ public class LocalVariableScannerPass3 extends AbstractAstScanner {
     // 变量声明
     @Override
     public void enterVariableDeclaratorId(SlimParser.VariableDeclaratorIdContext ctx) {
-        String idName = ctx.IDENTIFIER().getText();
-        Scope scope = annotatedTree.getEnclosingScope(ctx);
-
-        // 第一步只把类的成员变量入符号表。在变量消解时，再把本地变量加入符号表，一边Enter，一边消解。
-        Variable variable = new Variable(idName, scope, ctx);
-
-        // 变量查重
-        if (scope.getVariable(idName) != null) {
-            annotatedTree.log("Variable or parameter already Declared: " + idName, ctx);
-        }
-
-        scope.addSymbol(variable);
-        annotatedTree.relateSymbolToNode(variable, ctx);
+//        String idName = ctx.IDENTIFIER().getText();
+//        Scope scope = annotatedTree.getEnclosingScope(ctx);
+//
+//        // 第一步只把类的成员变量入符号表。在变量消解时，再把本地变量加入符号表，一边Enter，一边消解。
+//        Variable variable = new Variable(idName, scope, ctx);
+//
+//        // 变量查重
+//        if (scope.getVariable(idName) != null) {
+//            annotatedTree.log("Variable or parameter already Declared: " + idName, ctx);
+//        }
+//
+//        scope.addSymbol(variable);
+//        annotatedTree.relateSymbolToNode(variable, ctx);
     }
 
     @Override
