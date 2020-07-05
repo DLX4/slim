@@ -16,6 +16,8 @@ import java.util.List;
 /**
  * @program: slim
  * @description: 作用域本地变量扫描、变量引用消解、 类型推导
+ * 变量引用消解： 本质就是relateSymbolToNode，把前面已经声明过的变量引用过来
+ * 类型推导： 本质就是relateTypeToNode，把推导出来的类型关联到节点
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
@@ -92,7 +94,14 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
 
             Variable variable = annotatedTree.lookupVariable(scope, idName);
             if (variable == null) {
-                annotatedTree.log("unknown variable or function: " + idName, ctx);
+                // 函数作为变量 消解
+                Function function = annotatedTree.lookupFunction(scope, idName);
+                if (function != null) {
+                    annotatedTree.relateSymbolToNode(function, ctx);
+                    type = function;
+                } else {
+                    annotatedTree.log("unknown variable or function: " + idName, ctx);
+                }
             } else {
                 annotatedTree.relateSymbolToNode(variable, ctx);
                 type = variable.getType();
@@ -116,7 +125,7 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
     public void exitExpression(SlimParser.ExpressionContext ctx) {
         SlimType type = null;
 
-        // 表达式下级向上级冒泡 （表达式中有函数调用）
+        // 表达式下级向上级冒泡 （表达式中有变量）
         if (ctx.primary() != null) {
             type = annotatedTree.getType(ctx.primary());
         }

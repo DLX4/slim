@@ -109,7 +109,7 @@ public class SlimUtils {
      * @Creator: dlx
      */
     public static String generateSymbolName(Class cls) {
-        String name = cls.getName();
+        String name = cls.getSimpleName();
         return name + getAutoIncID(name);
     }
 

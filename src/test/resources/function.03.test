@@ -1,0 +1,10 @@
+//函数用于赋值语句
+int foo(int a){
+    println("in foo, a = " + a);
+    return a;
+}
+
+function int(int) b;
+b = foo;
+b(5);
+

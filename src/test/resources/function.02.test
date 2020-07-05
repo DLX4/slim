@@ -1,0 +1,10 @@
+// 函数作为变量初始化值
+int foo(int a){
+    println("in foo, a = " + a);
+    return a;
+}
+
+function int(int) a = foo;
+a(4);
+
+

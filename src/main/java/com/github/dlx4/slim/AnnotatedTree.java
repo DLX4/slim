@@ -202,6 +202,33 @@ public class AnnotatedTree {
         return ret;
     }
 
+    /**
+     * 逐级查找函数。仅通过名字查找。如果有重名的，返回第一个就算了。
+     * TODO 如果有重名的需要报错。
+     *
+     * @param scope
+     * @param name
+     * @return
+     */
+    public Function lookupFunction(Scope scope, String name) {
+        Function ret;
+        ret = getFunctionOnlyByName(scope, name);
+
+        if (ret == null && scope.getEnclosingScope() != null) {
+            ret = lookupFunction(scope.getEnclosingScope(), name);
+        }
+
+        return ret;
+    }
+
+    private Function getFunctionOnlyByName(Scope scope, String name) {
+        for (SlimSymbol s : scope.getSymbols()) {
+            if (s instanceof Function && Objects.equals(s.getName(), name)) {
+                return (Function) s;
+            }
+        }
+        return null;
+    }
 
     /**
      * @param message

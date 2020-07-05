@@ -6,4 +6,5 @@ int fibonacci(int num){
             return fibonacci(num-1) + fibonacci(num-2);
         }
 }
-return fibonacci(6);
+int a = fibonacci(6);
+return a;

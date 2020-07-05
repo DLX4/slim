@@ -1,6 +1,7 @@
 package com.github.dlx4.slim.symbol;
 
 import com.github.dlx4.slim.type.SlimType;
+import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import java.util.Objects;
  * @author: dlx
  * @created: 2020/06/29 23:27
  */
+@Getter
 public abstract class Scope extends SlimSymbol {
 
     // 作用域中的成员，包括：变量，方法，类
