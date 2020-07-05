@@ -1,0 +1,9 @@
+//支持函数递归
+int fibonacci(int num){
+        if(num == 1 || num == 2){
+            return 1;
+        }else{
+            return fibonacci(num-1) + fibonacci(num-2);
+        }
+}
+return fibonacci(6);

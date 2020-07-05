@@ -113,6 +113,16 @@ public class SlimUtils {
         return name + getAutoIncID(name);
     }
 
+    /**
+     * @param str
+     * @Description: 字符串判空
+     * @return: boolean
+     * @Creator: dlx
+     */
+    public static boolean isEmpty(Object str) {
+        return (str == null || "".equals(str));
+    }
+
     private static class AstTreePrinter {
         /**
          * Platform dependent end-of-line marker

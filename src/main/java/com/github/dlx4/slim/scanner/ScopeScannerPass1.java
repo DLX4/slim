@@ -60,7 +60,7 @@ public class ScopeScannerPass1 extends AbstractAstScanner {
 
     @Override
     public void enterProg(SlimParser.ProgContext ctx) {
-        RootScope scope = new RootScope("", currentScope(), ctx);
+        RootScope scope = new RootScope(currentScope(), ctx);
         pushScope(scope, ctx);
     }
 

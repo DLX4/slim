@@ -113,16 +113,17 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
     public void exitExpression(SlimParser.ExpressionContext ctx) {
         SlimType type = null;
 
-        // 变量引用冒泡： 如果下级是一个变量，往上冒泡传递，以便在点符号表达式中使用
-        if (ctx.primary() != null) {
-            SlimSymbol symbol = annotatedTree.getSymbol(ctx.primary());
-            annotatedTree.relateSymbolToNode(symbol, ctx);
-        }
-
-        // 类型推断和综合
+        // 表达式下级向上级冒泡 （表达式中有函数调用）
         if (ctx.primary() != null) {
             type = annotatedTree.getType(ctx.primary());
-        } else if (ctx.bop != null && ctx.expression().size() >= 2) {
+        }
+
+        // 表达式下级向上级冒泡 （表达式中有函数调用）
+        else if (ctx.functionCall() != null) {
+            type = annotatedTree.getType(ctx.functionCall());
+        }
+
+        else if (ctx.bop != null && ctx.expression().size() >= 2) {
             SlimType type1 = annotatedTree.getType(ctx.expression(0));
             SlimType type2 = annotatedTree.getType(ctx.expression(1));
 

@@ -1,5 +1,6 @@
 package com.github.dlx4.slim.symbol;
 
+import com.github.dlx4.slim.SlimUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -25,6 +26,11 @@ public class SlimSymbol {
         this.name = name;
         this.enclosingScope = enclosingScope;
         this.ctx = ctx;
+    }
+
+    @Override
+    public String toString() {
+        return SlimUtils.isEmpty(this.name) ? "null" : this.name;
     }
 
 }

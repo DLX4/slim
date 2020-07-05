@@ -12,7 +12,7 @@ import com.github.dlx4.slim.type.VoidType;
 
 /**
  * @program: slim
- * @description: 扫描变量（解析普通变量、函数的声明，并标注其类型）
+ * @description: 扫描变量（解析普通变量、函数的声明、函数的调用，并标注其类型）
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
@@ -71,6 +71,11 @@ public class VariableScannerPass2 extends AbstractAstScanner {
             }
         }
     }
+
+//    @Override
+//    public void exitFunctionCall() {
+//
+//    }
 
 
     @Override

@@ -1,5 +1,6 @@
 package com.github.dlx4.slim.symbol;
 
+import com.github.dlx4.slim.SlimUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -10,7 +11,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public class RootScope extends BlockScope {
 
-    public RootScope(String name, Scope enclosingScope, ParserRuleContext ctx) {
-        super(name, enclosingScope, ctx);
+    public RootScope(Scope enclosingScope, ParserRuleContext ctx) {
+        super(SlimUtils.generateSymbolName(RootScope.class), enclosingScope, ctx);
     }
 }
