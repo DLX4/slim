@@ -24,7 +24,7 @@ public class VariableTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        Assertions.assertEquals(((Return)result).getValue(), 45);
+        Assertions.assertEquals(((Return) result).getValue(), 45);
     }
 
     @ValueSource(strings = {"variable.01.test"})
@@ -36,7 +36,7 @@ public class VariableTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        Assertions.assertEquals(((Return)result).getValue(), 24);
+        Assertions.assertEquals(((Return) result).getValue(), 24);
     }
 
 }

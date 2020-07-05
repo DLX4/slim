@@ -24,7 +24,7 @@ public class ReturnTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        Assertions.assertEquals(((Return)result).getValue(), 2);
+        Assertions.assertEquals(((Return) result).getValue(), 2);
     }
 
     @ValueSource(strings = {"return.01.test"})
@@ -36,7 +36,7 @@ public class ReturnTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        Assertions.assertEquals(((Return)result).getValue(), "exit");
+        Assertions.assertEquals(((Return) result).getValue(), "exit");
     }
 
 }

@@ -2,7 +2,10 @@ package com.github.dlx4.slim.scanner;
 
 import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimParser;
-import com.github.dlx4.slim.symbol.*;
+import com.github.dlx4.slim.symbol.BlockScope;
+import com.github.dlx4.slim.symbol.Function;
+import com.github.dlx4.slim.symbol.Scope;
+import com.github.dlx4.slim.symbol.Variable;
 import com.github.dlx4.slim.type.PrimitiveType;
 import com.github.dlx4.slim.type.SlimType;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -121,9 +124,7 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
         // 表达式下级向上级冒泡 （表达式中有函数调用）
         else if (ctx.functionCall() != null) {
             type = annotatedTree.getType(ctx.functionCall());
-        }
-
-        else if (ctx.bop != null && ctx.expression().size() >= 2) {
+        } else if (ctx.bop != null && ctx.expression().size() >= 2) {
             SlimType type1 = annotatedTree.getType(ctx.expression(0));
             SlimType type2 = annotatedTree.getType(ctx.expression(1));
 

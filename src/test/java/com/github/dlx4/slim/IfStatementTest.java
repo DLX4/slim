@@ -24,7 +24,7 @@ public class IfStatementTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        Assertions.assertEquals(((Return)result).getValue(), 11);
+        Assertions.assertEquals(((Return) result).getValue(), 11);
     }
 
 }
