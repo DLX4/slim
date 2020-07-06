@@ -4,6 +4,7 @@ import com.github.dlx4.slim.AnnotatedTree;
 import com.github.dlx4.slim.antlr.SlimBaseVisitor;
 import com.github.dlx4.slim.antlr.SlimParser;
 import com.github.dlx4.slim.symbol.BlockScope;
+import com.github.dlx4.slim.symbol.Function;
 import com.github.dlx4.slim.symbol.SlimSymbol;
 import com.github.dlx4.slim.symbol.Variable;
 import com.github.dlx4.slim.type.PrimitiveType;
@@ -278,11 +279,14 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         if (ctx.literal() != null) {
             ret = visitLiteral(ctx.literal());
         }
-        // 变量
+        // 变量 (普通变量及函数)
         else if (ctx.IDENTIFIER() != null) {
             SlimSymbol symbol = annotatedTree.getSymbol(ctx);
             if (symbol instanceof Variable) {
                 ret = rtStack.getLeftValue((Variable) symbol);
+            } else if (symbol instanceof Function) {
+                FunctionRtStore obj = new FunctionRtStore((Function) symbol);
+                ret = obj;
             }
         }
 
@@ -541,7 +545,7 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             return null;
         }
 
-        FunctionRtStore store = annotatedTree.getFunction(ctx);
+        FunctionRtStore store = getFunction(ctx);
 
         // 计算参数值
         List<Object> paramValues = calcParamValues(ctx);
@@ -553,6 +557,49 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         return ret;
     }
 
+    /**
+     * @param ctx
+     * @Description: 根据函数调用的上下文，返回一个FunctionObject。
+     * 对于函数类型的变量，这个functionObject是存在变量里的；
+     * 对于普通的函数调用，此时创建一个。
+     * @return: com.github.dlx4.slim.symbol.Function
+     * @Creator: dlx
+     */
+    public FunctionRtStore getFunction(SlimParser.FunctionCallContext ctx) {
+        if (ctx.IDENTIFIER() == null) return null;  //暂时不支持this和super
+
+        Function function = null;
+        FunctionRtStore store = null;
+
+        SlimSymbol symbol = annotatedTree.getSymbol(ctx);
+        // 函数类型的变量
+        if (symbol instanceof Variable) {
+            Variable variable = (Variable) symbol;
+            LeftValue leftValue = rtStack.getLeftValue(variable);
+            Object value = leftValue.getValue();
+            if (value instanceof FunctionRtStore) {
+                store = (FunctionRtStore) value;
+                function = store.getFunction();
+            }
+        }
+        // 普通函数
+        else if (symbol instanceof Function) {
+            function = (Function) symbol;
+        }
+        // 报错
+        else {
+            // 这是调用时的名称，不一定是真正的函数名，还可能是函数类型的变量名
+            String functionName = ctx.IDENTIFIER().getText();
+            annotatedTree.log("unable to find function or function variable " + functionName, ctx);
+            return null;
+        }
+
+        if (store == null) {
+            store = new FunctionRtStore(function);
+        }
+
+        return store;
+    }
 
     /**
      * 辅助类

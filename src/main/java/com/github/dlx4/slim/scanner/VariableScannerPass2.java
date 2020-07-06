@@ -128,6 +128,9 @@ public class VariableScannerPass2 extends AbstractAstScanner {
         if (ctx.primitiveType() != null) {
             SlimType type = annotatedTree.getType(ctx.primitiveType());
             annotatedTree.relateTypeToNode(type, ctx);
+        }  else if (ctx.functionType() != null) {
+            SlimType type = annotatedTree.getType(ctx.functionType());
+            annotatedTree.relateTypeToNode(type, ctx);
         }
 
     }

@@ -8,7 +8,7 @@ import java.util.List;
  * @author: dlx
  * @created: 2020/06/30 00:30
  */
-public interface FunctionType {
+public interface FunctionType extends SlimType {
 
     /**
      * @param function

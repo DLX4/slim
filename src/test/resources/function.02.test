@@ -5,6 +5,6 @@ int foo(int a){
 }
 
 function int(int) a = foo;
-a(4);
+return a(4);
 
 

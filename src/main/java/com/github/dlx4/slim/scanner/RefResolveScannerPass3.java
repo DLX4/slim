@@ -74,13 +74,21 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
         // 从当前Scope逐级查找函数(或方法)
         if (!found) {
             Function function = annotatedTree.lookupFunction(scope, idName, paramTypes);
-            if (function != null) {
+
+            if (function == null) {
+                Variable variable = annotatedTree.lookupVariable(scope, idName);
+                if (variable != null) {
+                    found = true;
+                    annotatedTree.relateSymbolToNode(variable, ctx);
+                    annotatedTree.relateTypeToNode(variable.getType(), ctx);
+                }
+
+            } else {
                 found = true;
                 annotatedTree.relateSymbolToNode(function, ctx);
                 annotatedTree.relateTypeToNode(function.returnType(), ctx);
             }
         }
-
     }
 
     @Override

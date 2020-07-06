@@ -6,7 +6,7 @@ package com.github.dlx4.slim.type;
  * @author: dlx
  * @created: 2020/06/30 00:37
  */
-public class PrimitiveType extends SlimType {
+public class PrimitiveType extends AbstractSlimType {
 
     // 把常见的基础数据类型都定义出来
     public static PrimitiveType Integer = new PrimitiveType("Integer");

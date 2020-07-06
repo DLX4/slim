@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Setter
 @Getter
-public class DefaultFunctionType extends SlimType implements FunctionType {
+public class DefaultFunctionType extends AbstractSlimType implements FunctionType {
 
     private final String name = null;
     private final List<SlimType> paramTypes = new LinkedList<>();
