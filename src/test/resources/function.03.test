@@ -6,5 +6,5 @@ int foo(int a){
 
 function int(int) b;
 b = foo;
-b(5);
+b(4);
 

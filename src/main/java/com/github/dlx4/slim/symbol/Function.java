@@ -56,4 +56,13 @@ public class Function extends Scope implements FunctionType {
     public boolean isMatch(List<SlimType> paramTypes) {
         return FunctionType.matchParameterTypes(this, paramTypes);
     }
+
+    @Override
+    public boolean isMatchType(SlimType type) {
+        if (type instanceof FunctionType) {
+            return isMatch(((FunctionType) type).paramTypes());
+        }
+
+        return false;
+    }
 }

@@ -8,7 +8,8 @@ package com.github.dlx4.slim.type;
  */
 public interface SlimType {
 
-    default boolean is(SlimType type) {
+    default boolean isMatchType(SlimType type) {
         return this == type;
     }
+
 }

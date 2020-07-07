@@ -65,15 +65,15 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
             Object left = visitExpression(ctx.expression(0));
             Object right = visitExpression(ctx.expression(1));
 
-            Object leftObject = left;
-            Object rightObject = right;
+            Object leftRtStore = left;
+            Object rightRtStore = right;
 
             if (left instanceof LeftValue) {
-                leftObject = ((LeftValue) left).getValue();
+                leftRtStore = ((LeftValue) left).getValue();
             }
 
             if (right instanceof LeftValue) {
-                rightObject = ((LeftValue) right).getValue();
+                rightRtStore = ((LeftValue) right).getValue();
             }
 
             // 本节点数据类型
@@ -84,44 +84,44 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
 
             switch (ctx.bop.getType()) {
                 case SlimParser.ADD:
-                    ret = EvaluatorHelper.add(leftObject, rightObject, type);
+                    ret = EvaluatorHelper.add(leftRtStore, rightRtStore, type);
                     break;
                 case SlimParser.SUB:
-                    ret = EvaluatorHelper.minus(leftObject, rightObject, type);
+                    ret = EvaluatorHelper.minus(leftRtStore, rightRtStore, type);
                     break;
                 case SlimParser.MUL:
-                    ret = EvaluatorHelper.mul(leftObject, rightObject, type);
+                    ret = EvaluatorHelper.mul(leftRtStore, rightRtStore, type);
                     break;
                 case SlimParser.DIV:
-                    ret = EvaluatorHelper.div(leftObject, rightObject, type);
+                    ret = EvaluatorHelper.div(leftRtStore, rightRtStore, type);
                     break;
                 case SlimParser.EQUAL:
-                    ret = EvaluatorHelper.eq(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    ret = EvaluatorHelper.eq(leftRtStore, rightRtStore, PrimitiveType.getUpperType(type1, type2));
                     break;
                 case SlimParser.NOTEQUAL:
-                    ret = !EvaluatorHelper.eq(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    ret = !EvaluatorHelper.eq(leftRtStore, rightRtStore, PrimitiveType.getUpperType(type1, type2));
                     break;
                 case SlimParser.LE:
-                    ret = EvaluatorHelper.le(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    ret = EvaluatorHelper.le(leftRtStore, rightRtStore, PrimitiveType.getUpperType(type1, type2));
                     break;
                 case SlimParser.LT:
-                    ret = EvaluatorHelper.lt(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    ret = EvaluatorHelper.lt(leftRtStore, rightRtStore, PrimitiveType.getUpperType(type1, type2));
                     break;
                 case SlimParser.GE:
-                    ret = EvaluatorHelper.ge(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    ret = EvaluatorHelper.ge(leftRtStore, rightRtStore, PrimitiveType.getUpperType(type1, type2));
                     break;
                 case SlimParser.GT:
-                    ret = EvaluatorHelper.gt(leftObject, rightObject, PrimitiveType.getUpperType(type1, type2));
+                    ret = EvaluatorHelper.gt(leftRtStore, rightRtStore, PrimitiveType.getUpperType(type1, type2));
                     break;
                 case SlimParser.AND:
-                    ret = (Boolean) leftObject && (Boolean) rightObject;
+                    ret = (Boolean) leftRtStore && (Boolean) rightRtStore;
                     break;
                 case SlimParser.OR:
-                    ret = (Boolean) leftObject || (Boolean) rightObject;
+                    ret = (Boolean) leftRtStore || (Boolean) rightRtStore;
                     break;
                 case SlimParser.ASSIGN:
                     if (left instanceof LeftValue) {
-                        ((LeftValue) left).setValue(rightObject);
+                        ((LeftValue) left).setValue(rightRtStore);
                         ret = right;
                     } else {
                         System.out.println("Unsupported feature during assignment");

@@ -1,12 +1,7 @@
 package com.github.dlx4.slim;
 
-import com.github.dlx4.slim.antlr.SlimParser;
-import com.github.dlx4.slim.runtime.FunctionRtStore;
-import com.github.dlx4.slim.runtime.LeftValue;
-import com.github.dlx4.slim.symbol.Function;
 import com.github.dlx4.slim.symbol.Scope;
 import com.github.dlx4.slim.symbol.SlimSymbol;
-import com.github.dlx4.slim.symbol.Variable;
 import com.github.dlx4.slim.type.SlimType;
 import lombok.Data;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -124,68 +119,6 @@ public class AnnotatedTree {
         return nodeRelateScope.get(node);
     }
 
-
-
-    /**
-     * @param scope
-     * @param idName
-     * @Description: 逐级scope查找variable
-     * @return: com.github.dlx4.slim.symbol.Variable
-     * @Creator: dlx
-     */
-    public Variable lookupVariable(Scope scope, String idName) {
-        Variable ret = scope.getVariable(idName);
-
-        if (ret == null && scope.getEnclosingScope() != null) {
-            ret = lookupVariable(scope.getEnclosingScope(), idName);
-        }
-        return ret;
-    }
-
-    /**
-     * 通过方法的名称和方法签名查找Function。逐级Scope查找。
-     *
-     * @param scope
-     * @param idName
-     * @param paramTypes
-     * @return
-     */
-    public Function lookupFunction(Scope scope, String idName, List<SlimType> paramTypes) {
-        Function ret = scope.getFunction(idName, paramTypes);
-
-        if (ret == null && scope.getEnclosingScope() != null) {
-            ret = lookupFunction(scope.getEnclosingScope(), idName, paramTypes);
-        }
-        return ret;
-    }
-
-    /**
-     * 逐级查找函数。仅通过名字查找。如果有重名的，返回第一个就算了。
-     * TODO 如果有重名的需要报错。
-     *
-     * @param scope
-     * @param name
-     * @return
-     */
-    public Function lookupFunction(Scope scope, String name) {
-        Function ret;
-        ret = getFunctionOnlyByName(scope, name);
-
-        if (ret == null && scope.getEnclosingScope() != null) {
-            ret = lookupFunction(scope.getEnclosingScope(), name);
-        }
-
-        return ret;
-    }
-
-    private Function getFunctionOnlyByName(Scope scope, String name) {
-        for (SlimSymbol s : scope.getSymbols()) {
-            if (s instanceof Function && Objects.equals(s.getName(), name)) {
-                return (Function) s;
-            }
-        }
-        return null;
-    }
 
     /**
      * @param message

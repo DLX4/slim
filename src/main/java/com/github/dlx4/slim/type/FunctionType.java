@@ -19,7 +19,7 @@ public interface FunctionType extends SlimType {
      */
     static boolean matchParameterTypes(FunctionType function, List<SlimType> paramTypes) {
         // 比较每个参数
-        if (paramTypes.size() != paramTypes.size()) {
+        if (function.paramTypes().size() != paramTypes.size()) {
             return false;
         }
 
@@ -27,7 +27,7 @@ public interface FunctionType extends SlimType {
         for (int i = 0; i < paramTypes.size(); i++) {
             SlimType type1 = function.paramTypes().get(i);
             SlimType type2 = paramTypes.get(i);
-            if (!type1.is(type2)) {
+            if (!type1.isMatchType(type2)) {
                 match = false;
                 break;
             }

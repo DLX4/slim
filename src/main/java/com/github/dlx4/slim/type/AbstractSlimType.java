@@ -19,16 +19,6 @@ public abstract class AbstractSlimType implements SlimType {
         this.name = name;
     }
 
-    /**
-     * @param type
-     * @Description: 本类型是不是 is 目标类型
-     * @return: boolean
-     * @Creator: dlx
-     */
-    @Override
-    public boolean is(SlimType type) {
-        return this == type;
-    }
 
     @Override
     public String toString() {

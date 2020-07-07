@@ -12,7 +12,9 @@ import com.github.dlx4.slim.type.VoidType;
 
 /**
  * @program: slim
- * @description: 扫描变量（解析普通变量、函数的声明、函数的调用，并标注其类型）
+ * @description: 1、变量加入到作用域（同时考虑将函数的形参假如到函数作用域）
+ * 2、通过relateTypeToNode标注节点类型（普通变量类型、函数变量类型）
+ * 3、通过relateSymbolToNode标注节点对应的变量
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
@@ -128,7 +130,7 @@ public class VariableScannerPass2 extends AbstractAstScanner {
         if (ctx.primitiveType() != null) {
             SlimType type = annotatedTree.getType(ctx.primitiveType());
             annotatedTree.relateTypeToNode(type, ctx);
-        }  else if (ctx.functionType() != null) {
+        } else if (ctx.functionType() != null) {
             SlimType type = annotatedTree.getType(ctx.functionType());
             annotatedTree.relateTypeToNode(type, ctx);
         }

@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * @program: slim
  * @description: 作用域本地变量扫描、变量引用消解、 类型推导
- * 变量引用消解： 本质就是relateSymbolToNode，把前面已经声明过的变量引用过来
- * 类型推导： 本质就是relateTypeToNode，把推导出来的类型关联到节点
+ * 1、变量引用消解： 本质就是relateSymbolToNode，把前面已经声明过的变量引用过来
+ * 2、类型推导： 本质就是relateTypeToNode，把推导出来的类型关联到节点
  * @author: dlx
  * @created: 2020/06/30 22:48
  */
@@ -69,25 +69,20 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
         // 获得参数类型，这些类型已经在表达式中推断出来
         List<SlimType> paramTypes = getParamTypes(ctx);
 
-        boolean found = false;
         Scope scope = annotatedTree.getEnclosingScope(ctx);
         // 从当前Scope逐级查找函数(或方法)
-        if (!found) {
-            Function function = annotatedTree.lookupFunction(scope, idName, paramTypes);
+        Function function = scope.lookupFunction(idName, paramTypes);
 
-            if (function == null) {
-                Variable variable = annotatedTree.lookupVariable(scope, idName);
-                if (variable != null) {
-                    found = true;
-                    annotatedTree.relateSymbolToNode(variable, ctx);
-                    annotatedTree.relateTypeToNode(variable.getType(), ctx);
-                }
-
-            } else {
-                found = true;
-                annotatedTree.relateSymbolToNode(function, ctx);
-                annotatedTree.relateTypeToNode(function.returnType(), ctx);
+        if (function == null) {
+            Variable variable = scope.lookupVariable(idName);
+            if (variable != null) {
+                annotatedTree.relateSymbolToNode(variable, ctx);
+                annotatedTree.relateTypeToNode(variable.getType(), ctx);
             }
+
+        } else {
+            annotatedTree.relateSymbolToNode(function, ctx);
+            annotatedTree.relateTypeToNode(function.returnType(), ctx);
         }
     }
 
@@ -100,10 +95,10 @@ public class RefResolveScannerPass3 extends AbstractAstScanner {
         if (ctx.IDENTIFIER() != null) {
             String idName = ctx.IDENTIFIER().getText();
 
-            Variable variable = annotatedTree.lookupVariable(scope, idName);
+            Variable variable = scope.lookupVariable(idName);
             if (variable == null) {
                 // 函数作为变量 消解
-                Function function = annotatedTree.lookupFunction(scope, idName);
+                Function function = scope.lookupFunction(idName);
                 if (function != null) {
                     annotatedTree.relateSymbolToNode(function, ctx);
                     type = function;

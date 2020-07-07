@@ -80,4 +80,62 @@ public abstract class Scope extends SlimSymbol {
         return null;
     }
 
+    /**
+     * @param idName
+     * @Description: 逐级scope查找variable
+     * @return: com.github.dlx4.slim.symbol.Variable
+     * @Creator: dlx
+     */
+    public Variable lookupVariable(String idName) {
+        Variable ret = this.getVariable(idName);
+
+        if (ret == null && this.getEnclosingScope() != null) {
+            ret = this.getEnclosingScope().lookupVariable(idName);
+        }
+        return ret;
+    }
+
+    /**
+     * 通过方法的名称和方法签名查找Function。逐级Scope查找。
+     *
+     * @param idName
+     * @param paramTypes
+     * @return
+     */
+    public Function lookupFunction(String idName, List<SlimType> paramTypes) {
+        Function ret = this.getFunction(idName, paramTypes);
+
+        if (ret == null && this.getEnclosingScope() != null) {
+            ret = this.getEnclosingScope().lookupFunction(idName, paramTypes);
+        }
+        return ret;
+    }
+
+    /**
+     * 逐级查找函数。仅通过名字查找。如果有重名的，返回第一个就算了。
+     * TODO 如果有重名的需要报错。
+     *
+     * @param name
+     * @return
+     */
+    public Function lookupFunction(String name) {
+        Function ret;
+        ret = this.getFunctionOnlyByName(name);
+
+        if (ret == null && this.getEnclosingScope() != null) {
+            ret = this.getEnclosingScope().lookupFunction(name);
+        }
+
+        return ret;
+    }
+
+    private Function getFunctionOnlyByName(String name) {
+        for (SlimSymbol s : symbols) {
+            if (s instanceof Function && Objects.equals(s.getName(), name)) {
+                return (Function) s;
+            }
+        }
+        return null;
+    }
+
 }

@@ -42,10 +42,10 @@ public class LeftValue {
 
     @Override
     public String toString() {
-        if (rtStore == null || getValue() == null) {
-            return "";
+        if (variable == null) {
+            return "unknown variable";
         } else {
-            return getValue().toString();
+            return variable.getName();
         }
     }
 }

@@ -20,4 +20,13 @@ public class FunctionRtStore extends RtStore {
     public FunctionRtStore(Function function) {
         this.function = function;
     }
+
+    @Override
+    public String toString() {
+        if (function == null) {
+            return "unknown function";
+        } else {
+            return function.getName();
+        }
+    }
 }
