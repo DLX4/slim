@@ -1,7 +1,12 @@
 package com.github.dlx4.slim.symbol;
 
+import com.github.dlx4.slim.SlimUtils;
+import com.github.dlx4.slim.runtime.LeftValue;
+import com.github.dlx4.slim.runtime.RtStack;
+import com.github.dlx4.slim.runtime.RtStore;
 import com.github.dlx4.slim.type.FunctionType;
 import com.github.dlx4.slim.type.SlimType;
+import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -16,7 +21,8 @@ import java.util.Set;
  * @created: 2020/07/04 13:34
  */
 @Setter
-public class Function extends Scope implements FunctionType {
+@Getter
+public class Function extends BlockScope implements FunctionType {
 
     // 参数
     private final List<Variable> paramVars = new LinkedList<>();
@@ -65,4 +71,6 @@ public class Function extends Scope implements FunctionType {
 
         return false;
     }
+
+
 }

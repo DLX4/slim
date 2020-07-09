@@ -33,6 +33,18 @@ public class RtStack {
             frame = frame.getParentFrame();
         }
 
+        // 普通的函数作用域找不到，就从闭包里找
+        if (store == null) {
+            frame = stack.peek();
+            while (frame != null) {
+                if (frame.contains(variable)) {
+                    store = frame.getRtStore();
+                    break;
+                }
+                frame = frame.getParentFrame();
+            }
+        }
+
         LeftValue leftValue = LeftValue.builder()
                 .rtStore(store)
                 .variable(variable)

@@ -3,6 +3,7 @@ package com.github.dlx4.slim;
 import com.github.dlx4.slim.antlr.SlimLexer;
 import com.github.dlx4.slim.antlr.SlimParser;
 import com.github.dlx4.slim.runtime.SlimEvaluator;
+import com.github.dlx4.slim.scanner.ClosureAnalyzeScannerPass4;
 import com.github.dlx4.slim.scanner.RefResolveScannerPass3;
 import com.github.dlx4.slim.scanner.ScopeScannerPass1;
 import com.github.dlx4.slim.scanner.VariableScannerPass2;
@@ -53,6 +54,10 @@ public class SlimCompiler {
         // 引用消解扫描
         RefResolveScannerPass3 refResolveScanner = new RefResolveScannerPass3(annotatedTree);
         walker.walk(refResolveScanner, ast);
+
+        // 闭包分析扫描
+        ClosureAnalyzeScannerPass4 closureAnalyzeScanner = new ClosureAnalyzeScannerPass4(annotatedTree);
+        closureAnalyzeScanner.analyzeClosures();
 
         return annotatedTree;
     }

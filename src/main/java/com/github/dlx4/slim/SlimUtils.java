@@ -7,10 +7,7 @@ import org.antlr.v4.runtime.tree.Tree;
 import org.antlr.v4.runtime.tree.Trees;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: slim
@@ -119,8 +116,18 @@ public class SlimUtils {
      * @return: boolean
      * @Creator: dlx
      */
-    public static boolean isEmpty(Object str) {
+    public static boolean isEmpty(String str) {
         return (str == null || "".equals(str));
+    }
+
+    /**
+     * @param collection
+     * @Description: 集合判空
+     * @return: boolean
+     * @Creator: dlx
+     */
+    public static boolean isEmpty(Collection<?> collection) {
+        return (collection == null || collection.isEmpty());
     }
 
     private static class AstTreePrinter {

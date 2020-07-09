@@ -1,6 +1,7 @@
 package com.github.dlx4.slim.runtime;
 
 import com.github.dlx4.slim.AnnotatedTree;
+import com.github.dlx4.slim.SlimUtils;
 import com.github.dlx4.slim.antlr.SlimBaseVisitor;
 import com.github.dlx4.slim.antlr.SlimParser;
 import com.github.dlx4.slim.symbol.BlockScope;
@@ -389,6 +390,12 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
                 if (ret instanceof LeftValue) {
                     ret = ((LeftValue) ret).getValue();
                 }
+
+                // 将闭包涉及的环境变量都打包带走
+                if (ret instanceof FunctionRtStore) {
+                    FunctionRtStore functionRtStore = (FunctionRtStore) ret;
+                    this.packClosureValues(functionRtStore);
+                }
             }
 
             // 包装return语句的返回值
@@ -599,6 +606,25 @@ public class SlimEvaluator extends SlimBaseVisitor<Object> {
         }
 
         return store;
+    }
+
+
+    /**
+     * @param functionRtStore
+     * @Description: 打包变量给闭包
+     * @return: void
+     * @Creator: dlx
+     */
+    private void packClosureValues(FunctionRtStore functionRtStore) {
+        Function function = functionRtStore.getFunction();
+
+        if (!SlimUtils.isEmpty(function.getClosureVars())) {
+            for (Variable var : function.getClosureVars()) {
+                LeftValue leftValue = rtStack.getLeftValue(var);
+                Object value = leftValue.getValue();
+                functionRtStore.setValue(var, value);
+            }
+        }
     }
 
     /**

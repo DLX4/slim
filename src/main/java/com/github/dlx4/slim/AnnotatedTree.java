@@ -5,6 +5,7 @@ import com.github.dlx4.slim.symbol.SlimSymbol;
 import com.github.dlx4.slim.type.SlimType;
 import lombok.Data;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.*;
@@ -28,7 +29,10 @@ public class AnnotatedTree {
     private final Map<ParserRuleContext, Scope> nodeRelateScope = new HashMap<>();
 
     // AST节点推断出来的类型
-    protected Map<ParserRuleContext, SlimType> nodeRelateType = new HashMap<>();
+    private Map<ParserRuleContext, SlimType> nodeRelateType = new HashMap<>();
+
+    // 解析到的所有类型
+    private final List<SlimType> functionTypes = new ArrayList<>();
 
     // 编译信息，包括普通信息、警告和错误
     protected List<CompilationLog> logs = new LinkedList<>();
@@ -119,6 +123,22 @@ public class AnnotatedTree {
         return nodeRelateScope.get(node);
     }
 
+
+    /**
+     * 判断node1是不是node2的祖先
+     *
+     * @param node1
+     * @param node2
+     */
+    public static boolean isAncestor(RuleContext node1, RuleContext node2) {
+        if (node2.parent == null) {
+            return false;
+        } else if (node2.parent == node1) {
+            return true;
+        } else {
+            return isAncestor(node1, node2.parent);
+        }
+    }
 
     /**
      * @param message

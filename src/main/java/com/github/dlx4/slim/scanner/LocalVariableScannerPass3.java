@@ -36,7 +36,7 @@ public class LocalVariableScannerPass3 extends AbstractAstScanner {
     // 变量声明
     @Override
     public void enterVariableDeclaratorId(SlimParser.VariableDeclaratorIdContext ctx) {
-//        String idName = ctx.IDENTIFIER().getText();
+        String idName = ctx.IDENTIFIER().getText();
 //        Scope scope = annotatedTree.getEnclosingScope(ctx);
 //
 //        // 第一步只把类的成员变量入符号表。在变量消解时，再把本地变量加入符号表，一边Enter，一边消解。

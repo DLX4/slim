@@ -59,6 +59,8 @@ public class VariableScannerPass2 extends AbstractAstScanner {
     public void exitFunctionType(SlimParser.FunctionTypeContext ctx) {
         DefaultFunctionType functionType = new DefaultFunctionType();
 
+        annotatedTree.getFunctionTypes().add(functionType);
+
         annotatedTree.relateTypeToNode(functionType, ctx);
 
         // 返回值

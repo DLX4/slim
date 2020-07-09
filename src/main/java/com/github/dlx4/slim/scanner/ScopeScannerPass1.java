@@ -111,6 +111,8 @@ public class ScopeScannerPass1 extends AbstractAstScanner {
         // 现在只考虑function的scope, function的类型信息后续再处理 @See RefResolveScannerPass3
         Function function = new Function(idName, currentScope(), ctx);
 
+        annotatedTree.getFunctionTypes().add(function);
+
         currentScope().addSymbol(function);
         pushScope(function, ctx);
     }
