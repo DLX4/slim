@@ -1,9 +1,5 @@
 package com.github.dlx4.slim.symbol;
 
-import com.github.dlx4.slim.SlimUtils;
-import com.github.dlx4.slim.runtime.LeftValue;
-import com.github.dlx4.slim.runtime.RtStack;
-import com.github.dlx4.slim.runtime.RtStore;
 import com.github.dlx4.slim.type.FunctionType;
 import com.github.dlx4.slim.type.SlimType;
 import lombok.Getter;

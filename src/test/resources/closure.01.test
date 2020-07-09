@@ -1,0 +1,24 @@
+//支持闭包
+
+int a = 0;
+
+function int() fun1(){
+    int b = 0;
+
+    int inner(){
+        a = a+1;
+        b = b+1;
+        return a+b;
+    }
+
+    return inner;
+}
+
+function int() fun2 = fun1();
+println (fun2());//2
+println (fun2());//4
+fun2();//6
+
+
+
+

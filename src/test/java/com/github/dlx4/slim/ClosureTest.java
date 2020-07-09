@@ -1,6 +1,5 @@
 package com.github.dlx4.slim;
 
-import com.github.dlx4.slim.runtime.Return;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -25,6 +24,18 @@ public class ClosureTest extends BaseTest {
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
         Assertions.assertEquals(result, 1);
+    }
+
+    @ValueSource(strings = {"closure.01.test"})
+    @ParameterizedTest
+    void closure01(String fileName) throws IOException {
+
+        String script = this.getTestInput(fileName);
+
+        SlimCompiler compiler = new SlimCompiler();
+        AnnotatedTree at = compiler.compile(script);
+        Object result = compiler.execute(at);
+        Assertions.assertEquals(result, 6);
     }
 
 }
