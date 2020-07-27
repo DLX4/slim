@@ -35,7 +35,7 @@ public class ClosureTest extends BaseTest {
         SlimCompiler compiler = new SlimCompiler();
         AnnotatedTree at = compiler.compile(script);
         Object result = compiler.execute(at);
-        Assertions.assertEquals(result, 6);
+        Assertions.assertEquals(result, 9);
     }
 
 }

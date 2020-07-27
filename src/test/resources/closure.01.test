@@ -19,6 +19,11 @@ println (fun2());//2
 println (fun2());//4
 fun2();//6
 
+function int() fun3 = fun1();
+println (fun3());//5
+println (fun3());//7
+fun3();//9
+
 
 
 
